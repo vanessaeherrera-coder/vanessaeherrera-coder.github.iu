@@ -1,0 +1,260 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap');
+:root{--gold:#c9a84c;--dark:#1a0a00;--parch:#f5e6c8;--red:#8b1a1a;--brown:#5c3010}
+body{margin:0}
+#shell{background:#1a0a00;border-radius:14px;overflow:hidden;font-family:'IM Fell English',serif;padding-bottom:1rem}
+#topbar{background:#0d0500;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--gold)}
+#topbar .stat{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:1px}
+#topbar .stat span{color:#fff;font-size:13px}
+#title-screen,#win-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.2rem;text-align:center;min-height:420px}
+#title-screen h1,#win-screen h1{font-family:'Cinzel',serif;color:var(--gold);font-size:22px;letter-spacing:3px;margin-bottom:.5rem}
+#title-screen p{font-size:14px;color:#e8d090;line-height:1.8;max-width:460px;margin-bottom:1.2rem}
+.gold-btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;padding:11px 28px;background:var(--gold);color:#1a0a00;border:none;border-radius:5px;cursor:pointer;margin:5px}
+.gold-btn:hover{background:#e8c060}
+#board-wrap{padding:1rem;display:none}
+#board{display:grid;gap:10px;max-width:620px;margin:0 auto}
+.card{perspective:600px;cursor:pointer;height:110px}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s ease}
+.card.flipped .card-inner,.card.matched .card-inner{transform:rotateY(180deg)}
+.card-front,.card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.card-back{background:var(--brown);border:2px solid var(--gold);overflow:hidden}
+.card-back::before{content:'';position:absolute;inset:5px;border:1px solid rgba(201,168,76,0.4);border-radius:4px}
+.card-back-pattern{font-size:28px;color:rgba(201,168,76,0.25);line-height:1;letter-spacing:2px;font-family:serif}
+.card-front{background:var(--parch);border:2px solid var(--brown);transform:rotateY(180deg);padding:6px}
+.card-front .icon{font-size:36px;margin-bottom:4px;line-height:1}
+.card-front .label{font-family:'Cinzel',serif;font-size:9px;color:var(--brown);letter-spacing:1px;line-height:1.3;font-weight:700}
+.card.matched .card-front{background:#e8f5e9;border-color:#4caf50}
+.card.matched .card-front .label{color:#2e7d32}
+#quiz-overlay{display:none;position:absolute;inset:0;background:rgba(10,3,0,0.95);z-index:10;align-items:center;justify-content:center;border-radius:14px}
+#quiz-overlay.show{display:flex}
+#quiz-box{background:#1a0a00;border:2px solid var(--gold);border-radius:10px;padding:1.4rem 1.2rem;max-width:480px;width:90%}
+#quiz-box h2{font-family:'Cinzel',serif;color:var(--gold);font-size:13px;margin-bottom:12px;line-height:1.6;letter-spacing:1px}
+#quiz-box p{font-family:'IM Fell English',serif;font-size:14px;color:#e8d090;line-height:1.7;margin-bottom:14px}
+.qopt{display:block;width:100%;text-align:left;font-family:'IM Fell English',serif;font-size:13px;padding:9px 14px;margin:5px 0;background:#2a1000;color:#e8d090;border:1.5px solid #5c3010;border-radius:5px;cursor:pointer;line-height:1.5}
+.qopt:hover:not([disabled]){background:#3a1800;border-color:var(--gold);color:#fff}
+.qopt.correct{background:#1b4d1b;color:#a5d6a7;border-color:#4caf50;cursor:default}
+.qopt.wrong{background:#4d1b1b;color:#ef9a9a;border-color:#e53935;cursor:default}
+#qfb{font-family:'IM Fell English',serif;font-size:12px;margin-top:10px;line-height:1.7;min-height:14px;font-style:italic;color:var(--gold)}
+#msg-bar{text-align:center;font-family:'Cinzel',serif;font-size:11px;color:var(--gold);min-height:22px;padding:4px;letter-spacing:1px}
+#win-screen{display:none}
+#win-screen .stars{font-size:34px;letter-spacing:6px;margin:8px 0}
+#win-screen p{font-size:14px;color:#e8d090;line-height:1.8;max-width:420px;margin-bottom:12px}
+#timer-bar-wrap{height:5px;background:#2a1000;margin:0 1rem .2rem;border-radius:3px;overflow:hidden}
+#timer-bar{height:100%;background:var(--gold);width:100%;transition:width .5s linear;border-radius:3px}
+</style>
+
+<div id="shell">
+  <div id="topbar" style="display:none">
+    <div class="stat">PAREJAS: <span id="s-pairs">0/8</span></div>
+    <div class="stat">INTENTOS: <span id="s-tries">0</span></div>
+    <div class="stat">PUNTAJE: <span id="s-score">0</span></div>
+    <div class="stat">TIEMPO: <span id="s-time">60</span>s</div>
+  </div>
+  <div id="timer-bar-wrap" style="display:none"><div id="timer-bar"></div></div>
+
+  <div id="title-screen">
+    <h1>✦ El Puente del Diablo ✦</h1>
+    <p>Encuentra los pares de cartas ocultas con los personajes y elementos del cuento de Loja. ¡Cada par desbloqueará una pregunta de historia!</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
+      <button class="gold-btn" onclick="startGame('facil')">Fácil · 90s</button>
+      <button class="gold-btn" onclick="startGame('normal')">Normal · 60s</button>
+      <button class="gold-btn" onclick="startGame('dificil')">Difícil · 40s</button>
+    </div>
+    <p style="font-size:12px;color:#a08040">Haz clic en las cartas para voltearlas y encuentra los pares iguales.</p>
+  </div>
+
+  <div id="board-wrap" style="position:relative">
+    <div id="quiz-overlay">
+      <div id="quiz-box">
+        <h2 id="qpair-name"></h2>
+        <p id="qtext"></p>
+        <div id="qopts"></div>
+        <div id="qfb"></div>
+      </div>
+    </div>
+    <div id="msg-bar"></div>
+    <div id="board"></div>
+  </div>
+
+  <div id="win-screen">
+    <h1>¡Victoria!</h1>
+    <div class="stars" id="win-stars">✦✦✦</div>
+    <p id="win-msg"></p>
+    <p style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold)">Puntaje: <span id="win-score" style="font-size:18px;color:#fff"></span></p>
+    <p style="font-size:12px;color:#e8d090;font-style:italic;max-width:400px;margin-bottom:1rem">"La astucia y el trabajo en equipo pueden superar hasta los desafíos más grandes."</p>
+    <button class="gold-btn" onclick="showTitle()">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const CARDS=[
+  {id:'perro',   icon:'🐕', label:'El Perro\nHéroe',        q:'¿Qué rol cumplió el perro en la historia?', opts:['Destruyó el puente','Fue el primero en cruzar el puente salvando las almas','Atacó al hombre de negro','Nadó el río'], ans:1, tip:'¡Correcto! Los lojanos enviaron al perro a cruzar primero, engañando al diablo. Ningún alma humana fue entregada.'},
+  {id:'diablo',  icon:'👤', label:'El Hombre\nMisterioso',  q:'¿Qué condición puso el hombre misterioso para construir el puente?', opts:['Cobrar mucho dinero','Quedarse en el pueblo','Quedarse con el alma del primero que lo cruzara','Recibir tierras del rey'], ans:2, tip:'¡Exacto! Pidió el alma del PRIMERO que cruzara el puente como pago por su trabajo sobrenatural.'},
+  {id:'puente',  icon:'🌉', label:'El Puente\nde Piedra',   q:'¿En cuánto tiempo construyó el hombre misterioso el puente?', opts:['En una semana','En tres días','En un mes','En una sola noche'], ans:3, tip:'¡Correcto! El puente fue construido en UNA sola noche. Al amanecer todos se sorprendieron al verlo listo y perfecto.'},
+  {id:'loja',    icon:'🏘️', label:'Ciudad\nde Loja',        q:'¿Por qué los habitantes de Loja no podían cruzar el río?', opts:['El puente era de pago','En época de lluvias el río crecía y era imposible cruzarlo','El rey lo prohibía','El río era muy ancho siempre'], ans:1, tip:'¡Sí! En época de lluvias el río crecía con fuerza y cada intento de construir un puente fracasaba: se caía, lo arrastraba la corriente o no resistía.'},
+  {id:'rio',     icon:'🌊', label:'Río de\nObrapía',         q:'¿Qué le pasaba a cada puente que intentaban construir en el río?', opts:['Duraba muchos años','Se caía, lo arrastraba la corriente o no resistía','Siempre quedaba perfecto','Los enemigos lo destruían'], ans:1, tip:'¡Correcto! Cada intento fracasaba: el puente se caía, lo arrastraba la corriente o simplemente no resistía. Era un problema que duró muchos años.'},
+  {id:'noche',   icon:'🌙', label:'La Noche\nExtraña',       q:'¿Qué ocurrió durante la noche en que el hombre construía el puente?', opts:['Todo fue completamente silencioso','Hubo una tormenta terrible','Se escucharon ruidos extraños','El pueblo festejó con música'], ans:2, tip:'¡Exacto! Durante la noche se escucharon ruidos extraños. Nadie sabía exactamente qué pasaba, pero al amanecer el puente estaba listo.'},
+  {id:'alma',    icon:'✝️', label:'El Trato\ndel Alma',      q:'¿Qué representa el "alma" en este cuento popular de Loja?', opts:['Una moneda de la época','Lo más valioso e irremplazable de una persona','Un documento legal','El nombre de una persona'], ans:1, tip:'¡Muy bien! El alma representa lo más valioso e irremplazable. El diablo pedía lo más sagrado. Los lojanos se negaron a entregarlo con astucia.'},
+  {id:'astucia', icon:'💡', label:'La Astucia\nLojana',      q:'¿Cuál es la moraleja principal de este cuento?', opts:['Nunca confiar en extraños','El dinero puede comprar todo','La astucia y el trabajo en equipo superan los grandes desafíos','Los puentes son peligrosos'], ans:2, tip:'¡Perfecto! La moraleja es que con astucia y trabajo en equipo, hasta los desafíos más grandes se pueden superar encontrando una solución creativa.'},
+];
+
+let flipped=[],matched=[],tries=0,score=0,lock=false,timerSec=60,timerInt=null,difficulty='normal';
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startGame(diff){
+  difficulty=diff||'normal';
+  timerSec=diff==='facil'?90:diff==='dificil'?40:60;
+  flipped=[];matched=[];tries=0;score=0;lock=false;
+  document.getElementById('title-screen').style.display='none';
+  document.getElementById('win-screen').style.display='none';
+  document.getElementById('board-wrap').style.display='block';
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('timer-bar-wrap').style.display='block';
+  updateHUD();
+  buildBoard();
+  startTimer();
+}
+
+function buildBoard(){
+  const board=document.getElementById('board');
+  board.innerHTML='';
+  const cols=4;
+  board.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  const deck=shuffle([...CARDS,...CARDS].map((c,i)=>({...c,uid:i})));
+  deck.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.dataset.id=c.id;
+    div.dataset.uid=c.uid;
+    div.innerHTML=`<div class="card-inner">
+      <div class="card-back"><div class="card-back-pattern">✦ ✦<br>✦ ✦<br>✦ ✦</div></div>
+      <div class="card-front"><div class="icon">${c.icon}</div><div class="label">${c.label.replace('\n','<br>')}</div></div>
+    </div>`;
+    div.addEventListener('click',()=>flipCard(div,c));
+    board.appendChild(div);
+  });
+}
+
+function flipCard(div,c){
+  if(lock||div.classList.contains('flipped')||div.classList.contains('matched'))return;
+  div.classList.add('flipped');
+  flipped.push({div,c});
+  if(flipped.length===2){
+    tries++;
+    updateHUD();
+    lock=true;
+    const [a,b]=flipped;
+    if(a.c.id===b.c.id){
+      setTimeout(()=>{
+        a.div.classList.add('matched');
+        b.div.classList.add('matched');
+        matched.push(a.c.id);
+        score+=Math.max(10,50-tries*2);
+        flipped=[];lock=false;
+        updateHUD();
+        setMsg('¡Par encontrado! '+a.c.icon+' '+a.c.label.replace('\n',' '),'#f5c842');
+        setTimeout(()=>showQuiz(a.c),500);
+      },400);
+    } else {
+      setTimeout(()=>{
+        a.div.classList.remove('flipped');
+        b.div.classList.remove('flipped');
+        flipped=[];lock=false;
+        setMsg('No coinciden. ¡Sigue intentando!','#c8a060');
+      },900);
+    }
+  }
+}
+
+function showQuiz(c){
+  const qd=CARDS.find(x=>x.id===c.id);
+  if(!qd)return;
+  document.getElementById('qpair-name').textContent=c.icon+' '+c.label.replace('\n',' ');
+  document.getElementById('qtext').textContent=qd.q;
+  document.getElementById('qfb').textContent='';
+  const wrap=document.getElementById('qopts');
+  wrap.innerHTML='';
+  const lets=['A','B','C','D'];
+  qd.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='qopt';
+    btn.textContent=lets[i]+'. '+o;
+    btn.addEventListener('click',function(){
+      if(this.disabled)return;
+      wrap.querySelectorAll('.qopt').forEach(b=>b.disabled=true);
+      if(i===qd.ans){
+        this.classList.add('correct');
+        document.getElementById('qfb').textContent='✓ '+qd.tip;
+        document.getElementById('qfb').style.color='#a5d6a7';
+        score+=30;updateHUD();
+      } else {
+        this.classList.add('wrong');
+        wrap.querySelectorAll('.qopt')[qd.ans].classList.add('correct');
+        document.getElementById('qfb').textContent='✗ '+qd.tip;
+        document.getElementById('qfb').style.color='#ef9a9a';
+      }
+      setTimeout(()=>{
+        document.getElementById('quiz-overlay').classList.remove('show');
+        lock=false;
+        if(matched.length===CARDS.length) endGame(true);
+      },2600);
+    });
+    wrap.appendChild(btn);
+  });
+  document.getElementById('quiz-overlay').classList.add('show');
+}
+
+function setMsg(t,c){
+  const m=document.getElementById('msg-bar');
+  m.textContent=t;m.style.color=c||'#f5c842';
+}
+
+function startTimer(){
+  clearInterval(timerInt);
+  const total=timerSec;
+  const bar=document.getElementById('timer-bar');
+  bar.style.width='100%';bar.style.background='var(--gold)';
+  timerInt=setInterval(()=>{
+    timerSec--;
+    document.getElementById('s-time').textContent=timerSec;
+    bar.style.width=(timerSec/total*100)+'%';
+    if(timerSec<=10)bar.style.background='#e74c3c';
+    if(timerSec<=0){clearInterval(timerInt);endGame(false);}
+  },1000);
+}
+
+function endGame(win){
+  clearInterval(timerInt);
+  document.getElementById('quiz-overlay').classList.remove('show');
+  document.getElementById('board-wrap').style.display='none';
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('timer-bar-wrap').style.display='none';
+  document.getElementById('win-screen').style.display='flex';
+  const pct=matched.length/CARDS.length;
+  let stars='✦✦✦',msg='';
+  if(!win){
+    stars=pct>=0.75?'✦✦☆':pct>=0.5?'✦☆☆':'☆☆☆';
+    msg=`Se acabó el tiempo. Encontraste ${matched.length} de ${CARDS.length} pares. ¡Practica más sobre el cuento!`;
+  } else {
+    stars=tries<=10?'✦✦✦':tries<=16?'✦✦☆':'✦☆☆';
+    msg=tries<=10?'¡Memoria prodigiosa! Conoces el cuento a la perfección.':tries<=16?'¡Muy bien! La astucia lojana vive en ti.':'¡Lo lograste! El puente quedó firme, igual que tu memoria.';
+  }
+  document.getElementById('win-stars').textContent=stars;
+  document.getElementById('win-msg').textContent=msg;
+  document.getElementById('win-score').textContent=score;
+}
+
+function showTitle(){
+  document.getElementById('win-screen').style.display='none';
+  document.getElementById('title-screen').style.display='flex';
+}
+
+function updateHUD(){
+  document.getElementById('s-pairs').textContent=matched.length+'/'+CARDS.length;
+  document.getElementById('s-tries').textContent=tries;
+  document.getElementById('s-score').textContent=score;
+  document.getElementById('s-time').textContent=timerSec;
+}
+</script>

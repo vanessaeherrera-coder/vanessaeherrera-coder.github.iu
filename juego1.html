@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crucigrama — La Leyenda de Samka Cancha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --leather:#6e1f2a;
+    --leather-dark:#451018;
+    --gold:#c9a227;
+    --gold-light:#ecd089;
+    --parchment:#f3e8cf;
+    --parchment-dark:#e3d3a8;
+    --ink:#2e2013;
+    --forest:#3c4f2c;
+    --forest-dark:#2a3a1f;
+    --correct:#3f7d4a;
+    --incorrect:#b3433a;
+    --cell-size: clamp(20px, 4.6vw, 36px);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background: radial-gradient(ellipse at top, #4d6238 0%, var(--forest) 45%, var(--forest-dark) 100%);
+    font-family:'EB Garamond', serif;
+    color:var(--ink);
+    padding: 20px 12px 60px;
+    min-height:100vh;
+  }
+
+  .tome{
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--parchment);
+    border-radius: 6px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.2);
+    position:relative;
+    overflow:hidden;
+    border: 2px solid var(--gold);
+  }
+
+  /* corner flourishes echoing the book-cover ornament */
+  .corner{
+    position:absolute;
+    width:46px;height:46px;
+    pointer-events:none;
+    opacity:0.9;
+    z-index:3;
+  }
+  .corner svg{width:100%;height:100%;}
+  .corner.tl{top:6px;left:6px;}
+  .corner.tr{top:6px;right:6px;transform:scaleX(-1);}
+  .corner.bl{bottom:6px;left:6px;transform:scaleY(-1);}
+  .corner.br{bottom:6px;right:6px;transform:scale(-1,-1);}
+
+  header.cover{
+    background:
+      linear-gradient(160deg, rgba(255,255,255,0.05), transparent 40%),
+      linear-gradient(135deg, var(--leather) 0%, var(--leather-dark) 100%);
+    color: var(--gold-light);
+    text-align:center;
+    padding: 38px 20px 28px;
+    position:relative;
+    border-bottom: 3px double var(--gold);
+  }
+  header.cover .eyebrow{
+    font-family:'Cinzel', serif;
+    letter-spacing:3px;
+    font-size: 12px;
+    text-transform:uppercase;
+    color: var(--gold);
+    margin-bottom:10px;
+    opacity:0.85;
+  }
+  header.cover h1{
+    font-family:'Pirata One', serif;
+    font-size: clamp(34px, 7vw, 58px);
+    margin: 0 0 6px;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 0 22px rgba(201,162,39,0.35);
+    letter-spacing: 1px;
+  }
+  header.cover .subtitle{
+    font-family:'Cinzel', serif;
+    font-size: clamp(13px, 2.4vw, 16px);
+    letter-spacing: 2px;
+    text-transform:uppercase;
+    color: var(--parchment-dark);
+  }
+
+  .intro{
+    padding: 26px 28px 8px;
+    font-style: italic;
+    font-size: 17px;
+    line-height:1.55;
+    color: #45301b;
+    text-align:center;
+    max-width:680px;
+    margin:0 auto;
+  }
+  .intro strong{ font-style:normal; color: var(--leather); }
+
+  .howto{
+    margin: 18px 24px 0;
+    background: rgba(110,31,42,0.06);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    line-height:1.5;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 26px;
+    justify-content:center;
+  }
+  .howto span{ white-space:nowrap; }
+  .howto b{ color:var(--leather); font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.5px;}
+
+  main{
+    padding: 22px 18px 10px;
+  }
+
+  .progress-wrap{
+    max-width: 420px;
+    margin: 0 auto 18px;
+    text-align:center;
+  }
+  .progress-label{
+    font-family:'Cinzel', serif;
+    font-size: 12.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color: var(--leather);
+    margin-bottom:6px;
+  }
+  .progress-bar{
+    height: 10px;
+    border-radius: 6px;
+    background: var(--parchment-dark);
+    border: 1px solid var(--gold);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background: linear-gradient(90deg, var(--gold), var(--correct));
+    transition: width 0.5s ease;
+  }
+
+  /* active clue ribbon */
+  .clue-banner{
+    max-width: 720px;
+    margin: 0 auto 18px;
+    background: var(--leather);
+    color: var(--gold-light);
+    padding: 12px 26px;
+    border-radius: 4px;
+    position:relative;
+    text-align:center;
+    font-size: 15.5px;
+    line-height:1.4;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  }
+  .clue-banner::before, .clue-banner::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:14px;
+    background: var(--leather);
+  }
+  .clue-banner::before{
+    left:-12px;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  }
+  .clue-banner::after{
+    right:-12px;
+    clip-path: polygon(0 0, 0 100%, 100% 50%);
+  }
+  .clue-banner .num{
+    font-family:'Cinzel', serif;
+    color: var(--gold);
+    margin-right:8px;
+  }
+  .clue-banner .dir-tag{
+    font-family:'Cinzel', serif;
+    font-size:10.5px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color: var(--parchment-dark);
+    display:block;
+    margin-top:2px;
+    opacity:0.8;
+  }
+
+  .puzzle-layout{
+    display:flex;
+    gap: 26px;
+    align-items:flex-start;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .grid-area{
+    overflow-x:auto;
+    padding: 6px;
+    max-width:100%;
+  }
+  #grid{
+    display:grid;
+    gap:2px;
+    background: var(--gold);
+    padding:2px;
+    border-radius:3px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    width:max-content;
+    margin:0 auto;
+  }
+  .cell{
+    width: var(--cell-size);
+    height: var(--cell-size);
+    position:relative;
+    background: transparent;
+  }
+  .cell.blocked{ background: transparent; }
+  .cell.live{
+    background: var(--parchment);
+  }
+  .cell.live input{
+    width:100%;
+    height:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-family:'EB Garamond', serif;
+    font-weight:600;
+    font-size: calc(var(--cell-size) * 0.52);
+    color: var(--ink);
+    text-transform:uppercase;
+    caret-color: var(--leather);
+    padding:0;
+    border-radius:2px;
+  }
+  .cell.live input:focus{
+    outline: none;
+    background: #fffaf0;
+    box-shadow: inset 0 0 0 2px var(--leather);
+  }
+  .cell .num{
+    position:absolute;
+    top:1px; left:2px;
+    font-family:'Cinzel', serif;
+    font-size: calc(var(--cell-size) * 0.26);
+    color: var(--leather);
+    pointer-events:none;
+    line-height:1;
+  }
+  .cell.active-word input{ background: #f7e9c4; }
+  .cell.active-cell input{ background: #f3d889; }
+  .cell.correct input{ background: #d9ecd4; color: var(--correct); box-shadow: inset 0 0 0 2px var(--correct);}
+  .cell.incorrect input{ background: #f7d9d6; color: var(--incorrect); animation: shake 0.32s; }
+
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-3px); }
+    75%{ transform:translateX(3px); }
+  }
+
+  .clues-area{
+    display:flex;
+    gap: 22px;
+    flex-wrap:wrap;
+    max-width: 420px;
+  }
+  .clue-group h3{
+    font-family:'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform:uppercase;
+    color: var(--leather);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 6px;
+    margin: 0 0 8px;
+  }
+  .clue-group ul{
+    list-style:none;
+    margin:0; padding:0;
+    font-size: 14px;
+    line-height:1.45;
+  }
+  .clue-group li{
+    padding: 6px 8px;
+    border-radius:5px;
+    cursor:pointer;
+    margin-bottom:2px;
+    transition: background 0.15s;
+  }
+  .clue-group li:hover{ background: rgba(110,31,42,0.08); }
+  .clue-group li.active{
+    background: var(--leather);
+    color: var(--gold-light);
+  }
+  .clue-group li.solved{
+    text-decoration: line-through;
+    opacity:0.55;
+  }
+  .clue-group li b{
+    font-family:'Cinzel', serif;
+    margin-right:6px;
+  }
+
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin: 26px 0 6px;
+  }
+  .btn{
+    font-family:'Cinzel', serif;
+    font-size: 12.5px;
+    letter-spacing: 1px;
+    text-transform:uppercase;
+    color: var(--gold-light);
+    background: linear-gradient(160deg, var(--leather) 0%, var(--leather-dark) 100%);
+    border: 1px solid var(--gold);
+    padding: 11px 22px;
+    border-radius: 22px;
+    cursor:pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn:hover{ transform: translateY(-2px); box-shadow: 0 9px 18px rgba(0,0,0,0.3); }
+  .btn:active{ transform: translateY(0); }
+  .btn.secondary{
+    background: var(--parchment-dark);
+    color: var(--leather);
+  }
+
+  footer{
+    text-align:center;
+    padding: 18px 18px 28px;
+    font-size:12.5px;
+    color: #5a4226;
+    opacity:0.8;
+  }
+
+  /* Victory overlay */
+  .overlay{
+    position:fixed; inset:0;
+    background: rgba(20,15,8,0.72);
+    display:flex; align-items:center; justify-content:center;
+    z-index:50;
+    padding:20px;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.35s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+  .scroll{
+    background: var(--parchment);
+    border: 2px solid var(--gold);
+    border-radius:8px;
+    max-width: 520px;
+    width:100%;
+    padding: 32px 30px;
+    text-align:center;
+    position:relative;
+    transform: scaleY(0.05);
+    transform-origin: top;
+    transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  }
+  .overlay.show .scroll{ transform: scaleY(1); }
+  .seal{
+    width:64px; height:64px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 60%, #8a6a16 100%);
+    margin: 0 auto 14px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Pirata One', serif;
+    font-size: 26px;
+    color: var(--leather-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35), inset 0 0 0 3px rgba(255,255,255,0.25);
+  }
+  .scroll h2{
+    font-family:'Pirata One', serif;
+    color: var(--leather);
+    font-size: 30px;
+    margin: 0 0 10px;
+  }
+  .scroll p{
+    font-style: italic;
+    line-height:1.6;
+    font-size: 16px;
+    color:#3a2a17;
+    margin: 0 0 18px;
+  }
+  .scroll .close-btn{ margin-top: 6px; }
+
+  @media (max-width: 720px){
+    .puzzle-layout{ flex-direction:column; align-items:center; }
+    .clues-area{ max-width: 100%; width:100%; justify-content:space-between; }
+    .clue-group{ flex:1 1 45%; min-width:150px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tome">
+
+  <div class="corner tl"><svg viewBox="0 0 64 64"><path d="M2 2 L62 2 L62 10 Q34 10 10 34 Q10 58 2 62 Z" fill="none" stroke="#c9a227" stroke-width="2.2"/><circle cx="8" cy="8" r="3" fill="#c9a227"/></svg></div>
+  <div class="corner tr"><svg viewBox="0 0 64 64"><path d="M2 2 L62 2 L62 10 Q34 10 10 34 Q10 58 2 62 Z" fill="none" stroke="#c9a227" stroke-width="2.2"/><circle cx="8" cy="8" r="3" fill="#c9a227"/></svg></div>
+  <div class="corner bl"><svg viewBox="0 0 64 64"><path d="M2 2 L62 2 L62 10 Q34 10 10 34 Q10 58 2 62 Z" fill="none" stroke="#c9a227" stroke-width="2.2"/><circle cx="8" cy="8" r="3" fill="#c9a227"/></svg></div>
+  <div class="corner br"><svg viewBox="0 0 64 64"><path d="M2 2 L62 2 L62 10 Q34 10 10 34 Q10 58 2 62 Z" fill="none" stroke="#c9a227" stroke-width="2.2"/><circle cx="8" cy="8" r="3" fill="#c9a227"/></svg></div>
+
+  <header class="cover">
+    <div class="eyebrow">Hace mucho, mucho tiempo…</div>
+    <h1>La Leyenda de Samka Cancha</h1>
+    <div class="subtitle">Crucigrama interactivo</div>
+  </header>
+
+  <p class="intro">
+    En las faldas del volcán Pichincha, cerca de la ciudad de Quitwa, el joven
+    príncipe <strong>Atahualpa</strong> aprendió de su maestro <strong>Quishpe</strong>
+    que el verdadero valor de un líder está en la conciencia, no en el castigo.
+    Pon a prueba lo que recuerdas de la leyenda completando el crucigrama.
+  </p>
+
+  <div class="howto">
+    <span><b>Escribir →</b> haz clic en una casilla y escribe</span>
+    <span><b>Girar →</b> clic de nuevo en la misma casilla cambia horizontal/vertical</span>
+    <span><b>Moverse →</b> usa las flechas del teclado</span>
+    <span><b>Pistas →</b> usa el botón "Pista" si te atascas</span>
+  </div>
+
+  <main>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">0 / 14 palabras descifradas</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="clue-banner" id="clueBanner">
+      <span class="num" id="clueNum">1.</span><span id="clueText">Selecciona una casilla para comenzar…</span>
+      <span class="dir-tag" id="clueDir"></span>
+    </div>
+
+    <div class="puzzle-layout">
+      <div class="grid-area">
+        <div id="grid"></div>
+      </div>
+
+      <div class="clues-area">
+        <div class="clue-group">
+          <h3>Horizontales</h3>
+          <ul id="acrossList"></ul>
+        </div>
+        <div class="clue-group">
+          <h3>Verticales</h3>
+          <ul id="downList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="checkBtn">Revisar respuestas</button>
+      <button class="btn secondary" id="hintBtn">Pista</button>
+      <button class="btn secondary" id="resetBtn">Reiniciar</button>
+    </div>
+  </main>
+
+  <footer>
+    Basado en "La Leyenda Samka Chancha" — Proyecto de vinculación con la sociedad,
+    Pedagogía de las Ciencias Experimentales Informática, UNL.
+  </footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="scroll">
+    <div class="seal">Fin</div>
+    <h2>¡Has descifrado la leyenda!</h2>
+    <p>
+      "La verdadera fuerza no está en el castigo, sino en hacer el bien,
+      incluso cuando nadie nos ve." Así como Atahualpa, demostraste valentía
+      y una mente clara para llegar hasta el final.
+    </p>
+    <button class="btn close-btn" id="closeOverlay">Cerrar</button>
+  </div>
+</div>
+
+<script>
+const DATA = {"height":16,"width":19,"grid":[[null,"J",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],["Q","U","I","S","H","P","E",null,null,null,null,null,null,null,null,null,null,null,null],[null,"S",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,"T",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,"I",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,"C","O","N","C","I","E","N","C","I","A",null,null,null,null,"P",null,null,null],[null,"I",null,null,null,null,"M",null,"A",null,"T","R","A","I","D","O","R","E","S"],[null,"A",null,null,null,null,"P",null,"P",null,"A",null,null,null,null,"Z",null,null,null],[null,null,null,null,null,null,"E",null,"A",null,"H",null,null,null,null,"O",null,null,null],[null,null,null,null,null,null,"R",null,"C",null,"U",null,null,null,null,null,null,null,null],[null,null,null,null,"Q",null,"A",null,null,"V","A","L","E","N","T","I","A",null,null],[null,null,null,null,"U",null,"D",null,null,null,"L",null,null,null,null,null,null,null,"L"],[null,null,null,"V","I","B","O","R","A",null,"P","I","C","H","I","N","C","H","A"],[null,null,null,null,"T",null,"R",null,null,null,"A",null,null,null,"N",null,null,null,"Z"],[null,null,null,null,"W",null,null,null,null,null,null,null,null,null,"C",null,null,null,"O"],[null,null,null,null,"A",null,null,null,null,null,null,null,null,null,"A",null,null,null,null]],"numbers":[[null,1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[2,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,3,null,null,null,null,4,null,5,null,6,null,null,null,null,7,null,null,null],[null,null,null,null,null,null,null,null,null,null,8,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,9,null,null,null,null,10,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,11],[null,null,null,12,null,null,null,null,null,null,13,null,null,null,14,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"across":[{"word":"QUISHPE","clue":"Maestro sabio que enseñaba a Atahualpa","row":1,"col":0,"dir":"across","number":2},{"word":"CONCIENCIA","clue":"Lo que debe estar tranquila, según la moraleja","row":5,"col":1,"dir":"across","number":3},{"word":"TRAIDORES","clue":"Personas que eran castigadas en Samka-cancha","row":6,"col":10,"dir":"across","number":8},{"word":"VALENTIA","clue":"Cualidad que Atahualpa demostró al bajar al pozo","row":10,"col":9,"dir":"across","number":10},{"word":"VIBORA","clue":"Animal venenoso que vivía en el pozo y representaba la justicia","row":12,"col":3,"dir":"across","number":12},{"word":"PICHINCHA","clue":"Volcán en cuyas faldas se construyó la cárcel","row":12,"col":10,"dir":"across","number":13}],"down":[{"word":"JUSTICIA","clue":"Lo que simboliza la víbora del pozo","row":0,"col":1,"dir":"down","number":1},{"word":"EMPERADOR","clue":"Título que Atahualpa obtuvo con el paso de los años","row":5,"col":6,"dir":"down","number":4},{"word":"CAPAC","clue":"Apellido del antiguo emperador que mandó construir la cárcel (Huayna ___)","row":5,"col":8,"dir":"down","number":5},{"word":"ATAHUALPA","clue":"Joven príncipe inca que fue sometido a la prueba del pozo","row":5,"col":10,"dir":"down","number":6},{"word":"POZO","clue":"Lugar oscuro donde vivía la víbora","row":5,"col":15,"dir":"down","number":7},{"word":"QUITWA","clue":"Ciudad cercana a la cárcel Samka-cancha","row":10,"col":4,"dir":"down","number":9},{"word":"LAZO","clue":"Objeto usado para bajar a Atahualpa dentro del pozo","row":11,"col":18,"dir":"down","number":11},{"word":"INCA","clue":"Imperio al que pertenecía Atahualpa","row":12,"col":14,"dir":"down","number":14}],"unplaced":[]};
+
+const ALL_WORDS = [...DATA.across, ...DATA.down].map((w, i) => ({...w, id: i}));
+
+// Build cell metadata: for each (r,c) with a letter, find across/down membership
+const H = DATA.height, W = DATA.width;
+const cellMeta = [];
+for(let r=0;r<H;r++){
+  cellMeta.push([]);
+  for(let c=0;c<W;c++) cellMeta[r].push(null);
+}
+
+ALL_WORDS.forEach(w => {
+  for(let i=0;i<w.word.length;i++){
+    const r = w.dir === 'across' ? w.row : w.row + i;
+    const c = w.dir === 'across' ? w.col + i : w.col;
+    if(!cellMeta[r][c]) cellMeta[r][c] = { letter: w.word[i], across: null, down: null };
+    if(w.dir === 'across') cellMeta[r][c].across = { id: w.id, idx: i };
+    else cellMeta[r][c].down = { id: w.id, idx: i };
+  }
+});
+
+let currentDir = 'across';
+let currentWordId = null;
+let activeCell = null;
+
+const gridEl = document.getElementById('grid');
+gridEl.style.gridTemplateColumns = `repeat(${W}, var(--cell-size))`;
+gridEl.style.gridTemplateRows = `repeat(${H}, var(--cell-size))`;
+
+const inputs = []; // inputs[r][c]
+for(let r=0;r<H;r++){
+  inputs.push([]);
+  for(let c=0;c<W;c++){
+    const meta = cellMeta[r][c];
+    const div = document.createElement('div');
+    if(!meta){
+      div.className = 'cell blocked';
+      inputs[r].push(null);
+    } else {
+      div.className = 'cell live';
+      const num = DATA.numbers[r][c];
+      if(num){
+        const numEl = document.createElement('div');
+        numEl.className = 'num';
+        numEl.textContent = num;
+        div.appendChild(numEl);
+      }
+      const input = document.createElement('input');
+      input.maxLength = 1;
+      input.autocomplete = 'off';
+      input.dataset.row = r;
+      input.dataset.col = c;
+      div.appendChild(input);
+      inputs[r].push(input);
+
+      input.addEventListener('focus', () => onCellFocus(r,c));
+      input.addEventListener('keydown', (e) => onKeyDown(e,r,c));
+      input.addEventListener('input', (e) => onInput(e,r,c));
+    }
+    gridEl.appendChild(div);
+  }
+}
+
+function cellDiv(r,c){ return inputs[r][c] ? inputs[r][c].parentElement : null; }
+
+function onCellFocus(r,c){
+  const meta = cellMeta[r][c];
+  if(!meta) return;
+  // choose direction: keep current if available on this cell, else fallback
+  if(currentDir === 'across' && !meta.across) currentDir = meta.down ? 'down' : 'across';
+  if(currentDir === 'down' && !meta.down) currentDir = meta.across ? 'across' : 'down';
+  const wordRef = currentDir === 'across' ? meta.across : meta.down;
+  if(wordRef) selectWord(wordRef.id, r, c);
+}
+
+function onCellClick(r,c){
+  const meta = cellMeta[r][c];
+  if(!meta) return;
+  const sameCell = activeCell && activeCell[0] === r && activeCell[1] === c;
+  if(sameCell && meta.across && meta.down){
+    currentDir = currentDir === 'across' ? 'down' : 'across';
+  } else if(meta.across && !meta.down){
+    currentDir = 'across';
+  } else if(meta.down && !meta.across){
+    currentDir = 'down';
+  }
+  const wordRef = currentDir === 'across' ? meta.across : meta.down;
+  if(wordRef) selectWord(wordRef.id, r, c);
+}
+
+function selectWord(wordId, r, c){
+  currentWordId = wordId;
+  activeCell = [r,c];
+  highlightActive();
+  updateClueBanner();
+  updateClueListHighlight();
+}
+
+function getWord(id){ return ALL_WORDS[id]; }
+
+function wordCells(word){
+  const cells = [];
+  for(let i=0;i<word.word.length;i++){
+    const r = word.dir === 'across' ? word.row : word.row + i;
+    const c = word.dir === 'across' ? word.col + i : word.col;
+    cells.push([r,c]);
+  }
+  return cells;
+}
+
+function highlightActive(){
+  document.querySelectorAll('.cell.active-word').forEach(el => el.classList.remove('active-word'));
+  document.querySelectorAll('.cell.active-cell').forEach(el => el.classList.remove('active-cell'));
+  if(currentWordId === null) return;
+  const w = getWord(currentWordId);
+  wordCells(w).forEach(([r,c]) => {
+    const d = cellDiv(r,c);
+    if(d) d.classList.add('active-word');
+  });
+  if(activeCell){
+    const d = cellDiv(activeCell[0], activeCell[1]);
+    if(d) d.classList.add('active-cell');
+  }
+}
+
+function updateClueBanner(){
+  const numEl = document.getElementById('clueNum');
+  const textEl = document.getElementById('clueText');
+  const dirEl = document.getElementById('clueDir');
+  if(currentWordId === null){
+    numEl.textContent = '';
+    textEl.textContent = 'Selecciona una casilla para comenzar…';
+    dirEl.textContent = '';
+    return;
+  }
+  const w = getWord(currentWordId);
+  numEl.textContent = w.number + '.';
+  textEl.textContent = w.clue;
+  dirEl.textContent = w.dir === 'across' ? 'Horizontal' : 'Vertical';
+}
+
+function updateClueListHighlight(){
+  document.querySelectorAll('#acrossList li, #downList li').forEach(li => li.classList.remove('active'));
+  if(currentWordId === null) return;
+  const li = document.querySelector(`li[data-id="${currentWordId}"]`);
+  if(li) li.classList.add('active');
+}
+
+function moveTo(r,c){
+  if(r<0||r>=H||c<0||c>=W) return false;
+  if(!inputs[r][c]) return false;
+  inputs[r][c].focus();
+  inputs[r][c].select();
+  return true;
+}
+
+function nextInWord(r,c,dir,delta){
+  return dir === 'across' ? [r, c+delta] : [r+delta, c];
+}
+
+function onInput(e,r,c){
+  let v = e.target.value.toUpperCase().replace(/[^A-ZÑ]/g,'');
+  e.target.value = v.slice(0,1);
+  const div = e.target.parentElement;
+  div.classList.remove('correct','incorrect');
+  if(v){
+    const [nr,nc] = nextInWord(r,c,currentDir,1);
+    if(!moveTo(nr,nc)){
+      advanceToNextClue();
+    }
+  }
+  updateProgress();
+}
+
+function onKeyDown(e,r,c){
+  const key = e.key;
+  if(key === 'ArrowRight'){ e.preventDefault(); moveTo(r,c+1) || moveSkip(r,c,0,1); }
+  else if(key === 'ArrowLeft'){ e.preventDefault(); moveTo(r,c-1) || moveSkip(r,c,0,-1); }
+  else if(key === 'ArrowDown'){ e.preventDefault(); moveTo(r+1,c) || moveSkip(r+1,c,1,0); }
+  else if(key === 'ArrowUp'){ e.preventDefault(); moveTo(r-1,c) || moveSkip(r-1,c,-1,0); }
+  else if(key === 'Backspace'){
+    if(!e.target.value){
+      e.preventDefault();
+      const [pr,pc] = nextInWord(r,c,currentDir,-1);
+      if(inputs[pr] && inputs[pr][pc]){
+        inputs[pr][pc].value = '';
+        cellDiv(pr,pc).classList.remove('correct','incorrect');
+        moveTo(pr,pc);
+        updateProgress();
+      }
+    }
+  } else if(key === 'Enter'){
+    e.preventDefault();
+    onCellClick(r,c);
+  }
+}
+
+function moveSkip(r,c,dr,dc){
+  // skip over blocked cells in a straight line
+  let nr=r, nc=c;
+  while(nr>=0 && nr<H && nc>=0 && nc<W && !inputs[nr][nc]){
+    nr += dr; nc += dc;
+  }
+  moveTo(nr,nc);
+}
+
+function advanceToNextClue(){
+  if(currentWordId === null) return;
+  const nextId = (currentWordId + 1) % ALL_WORDS.length;
+  const w = getWord(nextId);
+  const [r,c] = wordCells(w)[0];
+  currentDir = w.dir;
+  selectWord(w.id, r, c);
+  moveTo(r,c);
+}
+
+// click handling on whole cell (in case clicking the div / number)
+gridEl.addEventListener('click', (e) => {
+  const input = e.target.closest('.cell.live input') || e.target.parentElement?.querySelector('input');
+});
+
+// attach click on cell div as well for direction toggle when refocusing same cell
+document.querySelectorAll('.cell.live').forEach(div => {
+  const input = div.querySelector('input');
+  div.addEventListener('mousedown', () => {
+    const r = parseInt(input.dataset.row), c = parseInt(input.dataset.col);
+    if(activeCell && activeCell[0]===r && activeCell[1]===c){
+      onCellClick(r,c);
+    }
+  });
+});
+
+function buildClueLists(){
+  const acrossList = document.getElementById('acrossList');
+  const downList = document.getElementById('downList');
+  DATA.across.slice().sort((a,b)=>a.number-b.number).forEach(w => {
+    const id = ALL_WORDS.findIndex(x => x.number===w.number && x.dir==='across');
+    const li = document.createElement('li');
+    li.dataset.id = id;
+    li.innerHTML = `<b>${w.number}.</b>${w.clue}`;
+    li.addEventListener('click', () => {
+      currentDir = 'across';
+      const ww = getWord(id);
+      const [r,c] = wordCells(ww)[0];
+      selectWord(id, r, c);
+      moveTo(r,c);
+    });
+    acrossList.appendChild(li);
+  });
+  DATA.down.slice().sort((a,b)=>a.number-b.number).forEach(w => {
+    const id = ALL_WORDS.findIndex(x => x.number===w.number && x.dir==='down');
+    const li = document.createElement('li');
+    li.dataset.id = id;
+    li.innerHTML = `<b>${w.number}.</b>${w.clue}`;
+    li.addEventListener('click', () => {
+      currentDir = 'down';
+      const ww = getWord(id);
+      const [r,c] = wordCells(ww)[0];
+      selectWord(id, r, c);
+      moveTo(r,c);
+    });
+    downList.appendChild(li);
+  });
+}
+buildClueLists();
+
+function isWordComplete(word){
+  return wordCells(word).every(([r,c]) => inputs[r][c].value !== '');
+}
+function isWordCorrect(word){
+  return wordCells(word).every(([r,c]) => inputs[r][c].value.toUpperCase() === cellMeta[r][c].letter);
+}
+
+function updateProgress(){
+  let solved = 0;
+  ALL_WORDS.forEach(w => {
+    const li = document.querySelector(`li[data-id="${w.id}"]`);
+    if(isWordCorrect(w)){
+      solved++;
+      if(li) li.classList.add('solved');
+    } else if(li){
+      li.classList.remove('solved');
+    }
+  });
+  document.getElementById('progressLabel').textContent = `${solved} / ${ALL_WORDS.length} palabras descifradas`;
+  document.getElementById('progressFill').style.width = (solved/ALL_WORDS.length*100) + '%';
+  if(solved === ALL_WORDS.length){
+    setTimeout(showVictory, 350);
+  }
+}
+
+document.getElementById('checkBtn').addEventListener('click', () => {
+  for(let r=0;r<H;r++){
+    for(let c=0;c<W;c++){
+      if(!cellMeta[r][c]) continue;
+      const input = inputs[r][c];
+      const div = cellDiv(r,c);
+      div.classList.remove('correct','incorrect');
+      if(!input.value) continue;
+      if(input.value.toUpperCase() === cellMeta[r][c].letter){
+        div.classList.add('correct');
+      } else {
+        div.classList.add('incorrect');
+      }
+    }
+  }
+  updateProgress();
+});
+
+document.getElementById('hintBtn').addEventListener('click', () => {
+  let word = currentWordId !== null ? getWord(currentWordId) : ALL_WORDS[0];
+  // find first cell in the word that's empty or wrong
+  let target = null;
+  for(const [r,c] of wordCells(word)){
+    if(inputs[r][c].value.toUpperCase() !== cellMeta[r][c].letter){ target = [r,c]; break; }
+  }
+  if(!target){
+    // word already correct; find any unsolved word
+    const unsolved = ALL_WORDS.find(w => !isWordCorrect(w));
+    if(!unsolved) return;
+    word = unsolved;
+    for(const [r,c] of wordCells(word)){
+      if(inputs[r][c].value.toUpperCase() !== cellMeta[r][c].letter){ target = [r,c]; break; }
+    }
+    currentDir = word.dir;
+    selectWord(word.id, target[0], target[1]);
+  }
+  const [r,c] = target;
+  inputs[r][c].value = cellMeta[r][c].letter;
+  cellDiv(r,c).classList.remove('incorrect');
+  cellDiv(r,c).classList.add('correct');
+  moveTo(r,c);
+  updateProgress();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('¿Seguro que quieres borrar todo el progreso?')) return;
+  for(let r=0;r<H;r++){
+    for(let c=0;c<W;c++){
+      if(!cellMeta[r][c]) continue;
+      inputs[r][c].value = '';
+      cellDiv(r,c).classList.remove('correct','incorrect');
+    }
+  }
+  updateProgress();
+});
+
+function showVictory(){
+  document.getElementById('overlay').classList.add('show');
+}
+document.getElementById('closeOverlay').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('show');
+});
+
+// init: select first across word
+(function init(){
+  const first = DATA.across.slice().sort((a,b)=>a.number-b.number)[0];
+  const id = ALL_WORDS.findIndex(x => x.number===first.number && x.dir==='across');
+  currentDir = 'across';
+  selectWord(id, first.row, first.col);
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>

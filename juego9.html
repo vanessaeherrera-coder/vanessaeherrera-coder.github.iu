@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego 7 – La Fiesta de la Chonta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #1a3a00 0%, #2d5a10 50%, #0d2800 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px;
+  }
+
+  #app { width: 100%; max-width: 680px; }
+
+  /* ===== PANTALLAS ===== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ===== TARJETA BASE ===== */
+  .card {
+    background: linear-gradient(145deg, #fffbe8, #fff3c8);
+    border-radius: 24px;
+    padding: 28px 24px;
+    border: 3px solid #c8901a;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  /* ===== TÍTULO ===== */
+  .game-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    color: #7a2e00;
+    text-align: center;
+    text-shadow: 2px 2px 0 #f0c060;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #5a3a00;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 6px 0 18px;
+  }
+
+  /* ===== INTRO ===== */
+  .intro-box {
+    background: #fff3c8;
+    border: 2px solid #c8901a;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 22px;
+    text-align: center;
+    color: #4a2800;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .big-emoji { font-size: 3.5rem; display: block; margin: 8px 0; animation: sway 2.5s ease-in-out infinite; }
+  @keyframes sway { 0%,100%{transform:rotate(-6deg)} 50%{transform:rotate(6deg)} }
+
+  .btn {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, #c85a00, #8a3a00);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 16px; font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem; cursor: pointer;
+    box-shadow: 0 5px 0 #5a2000;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #5a2000; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a2000; }
+  .btn.green { background: linear-gradient(135deg, #3a9a3a, #1a5a1a); box-shadow: 0 5px 0 #0d3a0d; }
+  .btn.green:hover { box-shadow: 0 7px 0 #0d3a0d; }
+
+  /* ===== SCORE BAR ===== */
+  .score-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #7a2e00; border-radius: 50px; padding: 8px 20px;
+    margin-bottom: 18px; color: #fff; font-weight: 900; font-size: 1rem;
+  }
+  .score-bar span:last-child { color: #ffd700; }
+
+  /* ===== INSTRUCCIÓN ===== */
+  .instruccion {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #7a2e00;
+    margin-bottom: 14px;
+    background: #ffe8a0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 2px solid #c8901a;
+  }
+
+  /* ===== ZONA DE SOLTAR ===== */
+  .drop-zone-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: #5a3a00;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .drop-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .drop-slot {
+    width: 100px; height: 110px;
+    border: 3px dashed #c8901a;
+    border-radius: 16px;
+    background: rgba(200,144,26,0.08);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s;
+    position: relative;
+  }
+
+  .drop-slot.drag-over {
+    background: rgba(200,144,26,0.25);
+    border-color: #8a3a00;
+  }
+
+  .drop-slot.filled { border-style: solid; border-color: #3a9a3a; background: rgba(58,154,58,0.1); }
+  .drop-slot.wrong  { border-color: #c83a00; background: rgba(200,58,0,0.1); animation: shake .4s; }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    75%{transform:translateX(6px)}
+  }
+
+  .slot-number {
+    position: absolute; top: 6px; left: 8px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    color: #c8901a;
+  }
+
+  .slot-number.filled-num { color: #3a9a3a; }
+
+  /* ===== TARJETAS PARA ARRASTRAR ===== */
+  .cards-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: #5a3a00;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .drag-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    min-height: 130px;
+    background: rgba(200,144,26,0.06);
+    border-radius: 16px;
+    padding: 12px;
+    border: 2px solid rgba(200,144,26,0.2);
+  }
+
+  .drag-card {
+    width: 100px; height: 110px;
+    background: linear-gradient(145deg, #fff8e1, #ffe082);
+    border: 3px solid #c8901a;
+    border-radius: 16px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: grab;
+    user-select: none;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: center;
+    padding: 6px;
+  }
+
+  .drag-card:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+  .drag-card.dragging { opacity: 0.4; transform: scale(0.95); }
+
+  .drag-card .card-emoji { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+  .drag-card .card-label {
+    font-size: 0.72rem; font-weight: 900;
+    color: #5a2800; line-height: 1.2;
+  }
+
+  /* Card placed inside slot */
+  .placed-card {
+    width: 88px; height: 96px;
+    background: linear-gradient(145deg, #e8f5e8, #c8e8c8);
+    border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 4px;
+    cursor: pointer;
+  }
+  .placed-card .card-emoji { font-size: 2rem; display: block; margin-bottom: 2px; }
+  .placed-card .card-label { font-size: 0.68rem; font-weight: 900; color: #1a4a1a; line-height: 1.2; }
+
+  /* ===== RESULTADO PARCIAL ===== */
+  .check-btn {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, #c8901a, #8a5a00);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 15px; font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem; cursor: pointer;
+    box-shadow: 0 5px 0 #5a3000;
+    margin-top: 18px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .check-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #5a3000; }
+  .check-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ===== PANTALLA FINAL ===== */
+  .result-emoji { font-size: 4rem; display: block; text-align: center; margin: 8px 0; }
+  .result-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem,6vw,2.5rem);
+    text-align: center;
+    color: #7a2e00;
+    margin-bottom: 6px;
+  }
+  .result-pts {
+    text-align: center; font-weight: 900;
+    color: #5a3a00; font-size: 1rem; margin-bottom: 14px;
+  }
+  .stars { text-align: center; font-size: 2.8rem; letter-spacing: 4px; margin-bottom: 14px; }
+
+  .result-list {
+    background: #fff3c8;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border: 2px solid #c8901a;
+  }
+  .result-list p {
+    font-size: 0.95rem;
+    color: #4a2800;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  .step-reveal {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff8e1; border-radius: 12px; padding: 8px 12px;
+    margin: 6px 0; border: 2px solid #e0b060;
+  }
+  .step-reveal .s-num {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem; color: #c85a00; flex-shrink: 0; width: 28px;
+  }
+  .step-reveal .s-emoji { font-size: 1.8rem; flex-shrink: 0; }
+  .step-reveal .s-text { font-size: 0.9rem; font-weight: 900; color: #4a2800; line-height: 1.3; }
+
+  /* Mobile touch helper */
+  .touch-hint {
+    text-align: center; font-size: 0.8rem; color: #8a5a00;
+    margin-top: 8px; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== PANTALLA INICIO ===== -->
+  <div id="screen-start" class="screen active">
+    <div class="card">
+      <span class="big-emoji">🌴</span>
+      <h1 class="game-title">¡La Fiesta de la Chonta!</h1>
+      <p class="subtitle">El Uyantsa del pueblo Shuar 🎶</p>
+      <div class="intro-box">
+        <strong>¡Hola, explorador! 🌿</strong><br><br>
+        El pueblo <strong>Shuar</strong> celebra cada año<br>
+        la <strong>Fiesta de la Chonta</strong>.<br><br>
+        ¿Sabes cómo se celebra?<br>
+        ¡Pon los pasos en el orden correcto<br>y gana estrellas! ⭐
+      </div>
+      <button class="btn" onclick="startGame()">🎉 ¡Jugar!</button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA JUEGO ===== -->
+  <div id="screen-game" class="screen">
+    <div class="card">
+      <div class="score-bar">
+        <span>🌴 Fiesta Chonta</span>
+        <span id="pts-display">⭐ 0 pts</span>
+      </div>
+
+      <div class="instruccion" id="instruccion">
+        ¡Arrastra cada tarjeta al número correcto! 🖐️
+      </div>
+
+      <!-- Slots -->
+      <div class="drop-zone-label">👇 Pon aquí los pasos en orden</div>
+      <div class="drop-row" id="drop-row"></div>
+
+      <!-- Cards to drag -->
+      <div class="cards-label">🃏 Tarjetas para ordenar</div>
+      <div class="drag-area" id="drag-area"></div>
+
+      <p class="touch-hint">📱 En celular: toca una tarjeta y luego toca el número</p>
+
+      <button class="check-btn" id="check-btn" onclick="checkAnswer()">
+        ✅ ¡Listo! Comprobar
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA FINAL ===== -->
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <div id="result-content"></div>
+      <button class="btn green" onclick="restartGame()" style="margin-top:8px;">🔄 ¡Jugar de nuevo!</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== DATOS: pasos en orden correcto =====
+const STEPS = [
+  { id: 1, emoji: '🌴', label: 'Recolectar la chonta en la selva', shortLabel: 'Recolectar chonta' },
+  { id: 2, emoji: '👐', label: 'Las mujeres preparan la chicha', shortLabel: 'Hacer la chicha' },
+  { id: 3, emoji: '🙏', label: 'Rituales de agradecimiento a la Pachamama', shortLabel: 'Agradecer a la tierra' },
+  { id: 4, emoji: '💃', label: 'Danzas y música con tambores y flautas', shortLabel: 'Bailar y cantar' },
+  { id: 5, emoji: '🍽️', label: 'Compartir comida y saberes entre todos', shortLabel: 'Compartir y festejar' },
+];
+
+let points = 0;
+let slots = []; // what's in each slot: null or step id
+let selectedCard = null; // for touch mode
+let attempts = 0;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  points = 0;
+  slots = [null, null, null, null, null];
+  selectedCard = null;
+  attempts = 0;
+  buildBoard();
+  showScreen('screen-game');
+}
+
+function buildBoard() {
+  // Build drop slots
+  const dropRow = document.getElementById('drop-row');
+  dropRow.innerHTML = '';
+  STEPS.forEach((_, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'drop-slot';
+    slot.dataset.index = i;
+    slot.innerHTML = `<span class="slot-number" id="num-${i}">${i+1}</span>`;
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); handleDrop(i); });
+    slot.addEventListener('click', () => handleSlotClick(i));
+    dropRow.appendChild(slot);
+  });
+
+  // Build shuffled cards
+  const area = document.getElementById('drag-area');
+  area.innerHTML = '';
+  const shuffled = [...STEPS].sort(() => Math.random() - 0.5);
+  shuffled.forEach(step => {
+    const card = createDragCard(step);
+    area.appendChild(card);
+  });
+
+  updateUI();
+}
+
+function createDragCard(step) {
+  const card = document.createElement('div');
+  card.className = 'drag-card';
+  card.id = `card-${step.id}`;
+  card.draggable = true;
+  card.dataset.stepId = step.id;
+  card.innerHTML = `<span class="card-emoji">${step.emoji}</span><span class="card-label">${step.shortLabel}</span>`;
+
+  card.addEventListener('dragstart', () => {
+    card.classList.add('dragging');
+    window._draggingId = step.id;
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+    window._draggingId = null;
+  });
+  card.addEventListener('click', () => handleCardClick(step.id));
+  return card;
+}
+
+// ===== DRAG & DROP =====
+function handleDrop(slotIndex) {
+  const dragId = window._draggingId;
+  if (dragId == null) return;
+
+  // If slot is occupied, return card to pool
+  if (slots[slotIndex] !== null) {
+    returnCardToPool(slots[slotIndex]);
+  }
+  // If this card was in another slot, clear that slot
+  const prevSlot = slots.indexOf(dragId);
+  if (prevSlot !== -1) slots[prevSlot] = null;
+
+  slots[slotIndex] = dragId;
+  updateUI();
+}
+
+// ===== TOUCH / CLICK MODE =====
+function handleCardClick(stepId) {
+  if (selectedCard === stepId) {
+    // Deselect
+    selectedCard = null;
+    document.getElementById(`card-${stepId}`)?.classList.remove('selected-card');
+    clearSlotHighlight();
+  } else {
+    // Select this card
+    clearCardSelection();
+    selectedCard = stepId;
+    const cardEl = document.getElementById(`card-${stepId}`);
+    if (cardEl) cardEl.style.outline = '3px solid #c83a00';
+    document.getElementById('instruccion').textContent = '👆 Ahora toca el número donde va esta tarjeta';
+  }
+}
+
+function handleSlotClick(slotIndex) {
+  if (selectedCard !== null) {
+    // Place selected card in this slot
+    if (slots[slotIndex] !== null) returnCardToPool(slots[slotIndex]);
+    const prevSlot = slots.indexOf(selectedCard);
+    if (prevSlot !== -1) slots[prevSlot] = null;
+    slots[slotIndex] = selectedCard;
+    clearCardSelection();
+    selectedCard = null;
+    document.getElementById('instruccion').textContent = '¡Arrastra cada tarjeta al número correcto! 🖐️';
+    updateUI();
+  } else if (slots[slotIndex] !== null) {
+    // Return placed card to pool
+    returnCardToPool(slots[slotIndex]);
+    slots[slotIndex] = null;
+    updateUI();
+  }
+}
+
+function returnCardToPool(stepId) {
+  const area = document.getElementById('drag-area');
+  const step = STEPS.find(s => s.id === stepId);
+  if (step) {
+    const existing = document.getElementById(`card-${stepId}`);
+    if (!existing) {
+      const card = createDragCard(step);
+      area.appendChild(card);
+    }
+  }
+}
+
+function clearCardSelection() {
+  STEPS.forEach(s => {
+    const el = document.getElementById(`card-${s.id}`);
+    if (el) el.style.outline = '';
+  });
+}
+
+function clearSlotHighlight() {}
+
+// ===== UPDATE UI =====
+function updateUI() {
+  const dropRow = document.getElementById('drop-row');
+  STEPS.forEach((_, i) => {
+    const slot = dropRow.children[i];
+    const numEl = document.getElementById(`num-${i}`);
+    // Clear slot content except number
+    while (slot.children.length > 1) slot.removeChild(slot.lastChild);
+    slot.classList.remove('filled', 'wrong');
+    if (numEl) { numEl.className = 'slot-number'; }
+
+    if (slots[i] !== null) {
+      const step = STEPS.find(s => s.id === slots[i]);
+      slot.classList.add('filled');
+      if (numEl) numEl.className = 'slot-number filled-num';
+      const placed = document.createElement('div');
+      placed.className = 'placed-card';
+      placed.innerHTML = `<span class="card-emoji">${step.emoji}</span><span class="card-label">${step.shortLabel}</span>`;
+      placed.onclick = () => handleSlotClick(i);
+      slot.appendChild(placed);
+
+      // Remove card from drag area
+      const cardEl = document.getElementById(`card-${slots[i]}`);
+      if (cardEl) cardEl.remove();
+    }
+  });
+
+  // Enable check button only when all slots filled
+  const allFilled = slots.every(s => s !== null);
+  document.getElementById('check-btn').disabled = !allFilled;
+  document.getElementById('pts-display').textContent = `⭐ ${points} pts`;
+}
+
+// ===== CHECK ANSWER =====
+function checkAnswer() {
+  attempts++;
+  let correct = 0;
+  const dropRow = document.getElementById('drop-row');
+
+  STEPS.forEach((step, i) => {
+    const slot = dropRow.children[i];
+    if (slots[i] === step.id) {
+      correct++;
+      slot.classList.remove('wrong');
+    } else {
+      slot.classList.add('wrong');
+    }
+  });
+
+  if (correct === STEPS.length) {
+    // All correct!
+    const bonus = attempts === 1 ? 50 : attempts === 2 ? 30 : 10;
+    points += 100 + bonus;
+    setTimeout(() => showResult(), 600);
+  } else {
+    // Some wrong — give hint
+    const wrong = STEPS.length - correct;
+    const instrEl = document.getElementById('instruccion');
+    instrEl.textContent = `❌ ${wrong} tarjeta${wrong>1?'s':''} en lugar incorrecto. ¡Inténtalo de nuevo!`;
+    instrEl.style.background = '#ffe0cc';
+    instrEl.style.color = '#8a2000';
+    points = Math.max(0, points - 10);
+    document.getElementById('pts-display').textContent = `⭐ ${points} pts`;
+    // Reset wrong slots after short delay
+    setTimeout(() => {
+      STEPS.forEach((_, i) => {
+        dropRow.children[i].classList.remove('wrong');
+      });
+      instrEl.textContent = '¡Arrastra cada tarjeta al número correcto! 🖐️';
+      instrEl.style.background = '#ffe8a0';
+      instrEl.style.color = '#7a2e00';
+    }, 1200);
+  }
+}
+
+// ===== RESULTADO =====
+function showResult() {
+  showScreen('screen-result');
+
+  let stars, emoji, title, msg;
+  if (attempts === 1) {
+    stars = '⭐⭐⭐'; emoji = '🏆'; title = '¡Perfecto!';
+    msg = '¡Lo ordenaste todo a la primera! Eres un experto de la Fiesta de la Chonta.';
+  } else if (attempts === 2) {
+    stars = '⭐⭐'; emoji = '🌟'; title = '¡Muy bien!';
+    msg = '¡Casi perfecto! Con un poco de práctica lo harás de una sola vez.';
+  } else {
+    stars = '⭐'; emoji = '🌱'; title = '¡Lo lograste!';
+    msg = '¡Bien hecho! Ahora ya conoces los pasos de la Fiesta de la Chonta.';
+  }
+
+  const stepsHTML = STEPS.map(s => `
+    <div class="step-reveal">
+      <span class="s-num">${s.id}</span>
+      <span class="s-emoji">${s.emoji}</span>
+      <span class="s-text">${s.label}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('result-content').innerHTML = `
+    <span class="result-emoji">${emoji}</span>
+    <div class="result-title">${title}</div>
+    <div class="result-pts">Obtuviste <strong>${points}</strong> puntos en ${attempts} intento${attempts>1?'s':''}</div>
+    <div class="stars">${stars}</div>
+    <div class="result-list">
+      <p style="font-weight:900; margin-bottom:10px; color:#7a2e00;">📋 El orden correcto era:</p>
+      ${stepsHTML}
+    </div>
+    <div style="background:#fff3c8; border:2px solid #c8901a; border-radius:14px; padding:14px; margin-bottom:18px; text-align:center; color:#4a2800; font-size:0.9rem; line-height:1.6;">
+      <strong>🌴 ¿Sabías que...?</strong><br>
+      El pueblo <strong>Shuar</strong> vive en la Amazonía de Ecuador. La palabra <em>Uyantsa</em> significa "Fiesta de la Chonta" en su idioma. ¡Es una tradición de hace cientos de años!
+    </div>
+  `;
+}
+
+function restartGame() {
+  startGame();
+}
+</script>
+</body>
+</html>

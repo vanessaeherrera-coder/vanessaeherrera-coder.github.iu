@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego 6 – La Niña del Cacao</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #1a3a1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  /* Animated background leaves */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(34,85,34,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(20,60,20,0.5) 0%, transparent 50%),
+      linear-gradient(160deg, #0d2b0d 0%, #1e4a1e 50%, #0a220a 100%);
+    z-index: -1;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 700px;
+    padding: 16px;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ===== CARD ===== */
+  .card {
+    background: linear-gradient(145deg, #fffbef, #fff8e1);
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 0 #c8a84b inset;
+    border: 3px solid #c8a84b;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(200,168,75,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  .title-art {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    color: #2d6a2d;
+    text-align: center;
+    line-height: 1.1;
+    text-shadow: 2px 2px 0 #c8a84b, 4px 4px 0 rgba(0,0,0,0.15);
+  }
+
+  .title-sub {
+    text-align: center;
+    color: #6b4c1a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 8px 0 20px;
+  }
+
+  .cacao-emoji {
+    font-size: 4rem;
+    display: block;
+    text-align: center;
+    margin: 12px 0;
+    animation: sway 3s ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%,100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .intro-text {
+    background: #f0f7e8;
+    border-left: 5px solid #4a9a4a;
+    border-radius: 0 12px 12px 0;
+    padding: 14px 16px;
+    color: #2c4a1c;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 16px 0 24px;
+  }
+
+  /* ===== SCORE BAR ===== */
+  .score-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d6a2d;
+    border-radius: 50px;
+    padding: 8px 20px;
+    margin-bottom: 20px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .score-bar .hearts { color: #ff6b6b; font-size: 1.1rem; letter-spacing: 2px; }
+  .score-bar .points { color: #ffd700; }
+
+  /* ===== SCENE ===== */
+  .scene-icon {
+    font-size: 3.5rem;
+    text-align: center;
+    display: block;
+    margin-bottom: 12px;
+    animation: bounce 1s ease-in-out;
+  }
+
+  @keyframes bounce {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .scene-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem;
+    color: #2d6a2d;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .scene-step {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #a07030;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .scene-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #2c3e1a;
+    background: #f5f9ec;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    border: 2px solid #b8d88a;
+  }
+
+  .scene-text strong { color: #2d6a2d; }
+
+  /* ===== CHOICES ===== */
+  .choices-label {
+    font-weight: 900;
+    color: #6b4c1a;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+
+  .choice-btn {
+    background: linear-gradient(135deg, #3a8a3a, #2d6a2d);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    box-shadow: 0 4px 0 #1a4a1a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .choice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #1a4a1a;
+    background: linear-gradient(135deg, #4aaa4a, #3a8a3a);
+  }
+
+  .choice-btn:active { transform: translateY(1px); box-shadow: 0 2px 0 #1a4a1a; }
+
+  .choice-btn .choice-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+  /* ===== FEEDBACK ===== */
+  .feedback {
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+    animation: fadein 0.4s ease;
+  }
+
+  @keyframes fadein { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .feedback.good {
+    background: #e6f7e6;
+    border: 2px solid #4a9a4a;
+    color: #1a4a1a;
+  }
+
+  .feedback.bad {
+    background: #fff3e0;
+    border: 2px solid #e07b20;
+    color: #6b3a10;
+  }
+
+  .feedback-icon { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+
+  /* ===== BUTTON ===== */
+  .btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #c8a84b, #a07030);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 0 #6b4c1a;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #6b4c1a; }
+  .btn:active { transform: translateY(1px); box-shadow: 0 2px 0 #6b4c1a; }
+  .btn.green {
+    background: linear-gradient(135deg, #4aaa4a, #2d6a2d);
+    box-shadow: 0 4px 0 #1a4a1a;
+  }
+  .btn.green:hover { box-shadow: 0 6px 0 #1a4a1a; }
+  .btn.green:active { box-shadow: 0 2px 0 #1a4a1a; }
+
+  /* ===== PROGRESS ===== */
+  .progress-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  .progress-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #c8d8a8;
+    border: 2px solid #4a7a4a;
+    transition: background 0.3s;
+  }
+
+  .progress-dot.done { background: #4aaa4a; }
+  .progress-dot.current { background: #c8a84b; border-color: #a07030; }
+
+  /* ===== RESULT SCREEN ===== */
+  .result-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    text-align: center;
+    margin: 8px 0 4px;
+  }
+
+  .result-score {
+    text-align: center;
+    font-size: 1rem;
+    color: #6b4c1a;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .stars {
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 8px 0 16px;
+    letter-spacing: 4px;
+  }
+
+  .result-msg {
+    background: #f0f7e8;
+    border-radius: 14px;
+    padding: 16px;
+    color: #2c4a1c;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    border: 2px solid #b8d88a;
+    text-align: center;
+  }
+
+  .medals {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .medal {
+    background: linear-gradient(135deg, #ffe066, #c8a84b);
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #5a3a00;
+    border: 2px solid #a07030;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== DECORATIVE BORDER ===== */
+  .leaf-border {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .leaf-border.tl { top: 10px; left: 14px; }
+  .leaf-border.tr { top: 10px; right: 14px; transform: scaleX(-1); }
+  .leaf-border.bl { bottom: 10px; left: 14px; transform: scaleY(-1); }
+  .leaf-border.br { bottom: 10px; right: 14px; transform: scale(-1); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== PANTALLA DE INICIO ===== -->
+  <div id="screen-title" class="screen active">
+    <div class="card">
+      <span class="leaf-border tl">🍃</span>
+      <span class="leaf-border tr">🍃</span>
+      <span class="leaf-border bl">🍃</span>
+      <span class="leaf-border br">🍃</span>
+      <h1 class="title-art">🌿 La Niña del Cacao 🌿</h1>
+      <p class="title-sub">¡Una aventura para salvar el río!</p>
+      <span class="cacao-emoji">🍫</span>
+      <div class="intro-text">
+        ¡Hola, aventurero! 👋<br><br>
+        <strong>Ana Lucía</strong> es una niña valiente del cantón Arenillas, en Ecuador. 
+        Ella puede escuchar los secretos del río y hablar con la naturaleza.<br><br>
+        Un día, el río le pidió ayuda: ¡los árboles estaban siendo cortados 
+        y el agua se estaba ensuciando! 😟<br><br>
+        <strong>¡Tu misión es acompañar a Ana Lucía y tomar las mejores decisiones para salvar el río!</strong>
+      </div>
+      <button class="btn green" onclick="startGame()">🌱 ¡Comenzar aventura!</button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA DE JUEGO ===== -->
+  <div id="screen-game" class="screen">
+    <div class="card">
+      <span class="leaf-border tl">🍃</span>
+      <span class="leaf-border tr">🍃</span>
+
+      <div class="score-bar">
+        <span class="hearts" id="hearts-display">❤️❤️❤️</span>
+        <span>🌿 La Niña del Cacao</span>
+        <span class="points">⭐ <span id="points-display">0</span> pts</span>
+      </div>
+
+      <div class="progress-row" id="progress-row"></div>
+
+      <span class="scene-icon" id="scene-icon">🌊</span>
+      <div class="scene-label" id="scene-label">Escena 1</div>
+      <div class="scene-step" id="scene-step">Paso 1 de 6</div>
+
+      <div class="scene-text" id="scene-text"></div>
+
+      <div id="feedback-area"></div>
+
+      <div class="choices-label" id="choices-label">¿Qué hace Ana Lucía?</div>
+      <div class="choices" id="choices-area"></div>
+
+      <div style="margin-top:16px;">
+        <button class="btn" id="next-btn" onclick="nextScene()" style="display:none;">
+          ¡Siguiente paso! →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA DE RESULTADO ===== -->
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <span class="leaf-border tl">🍃</span>
+      <span class="leaf-border tr">🍃</span>
+      <span class="leaf-border bl">🍃</span>
+      <span class="leaf-border br">🍃</span>
+      <div id="result-content"></div>
+      <button class="btn green" onclick="restartGame()">🔄 ¡Jugar de nuevo!</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== DATOS DEL JUEGO =====
+const scenes = [
+  {
+    icon: '🌅',
+    label: 'El río Arenillas',
+    text: 'Muy temprano en la mañana, <strong>Ana Lucía</strong> bajó descalza hasta el río Arenillas. El agua que antes era cristalina ahora bajaba turbia y lodosa. Los peces pequeños habían desaparecido. Ana Lucía puso su oído cerca del agua y escuchó algo increíble: el río estaba llorando.\n\n¿Qué debe hacer Ana Lucía primero?',
+    choices: [
+      { icon: '👂', text: 'Escuchar con calma y comprender el mensaje del río', good: true, points: 20, feedback: '¡Muy bien! 🌟 Ana Lucía escuchó con atención. El río le contó que los árboles del bosque estaban siendo cortados y que sus aguas se estaban ensuciando. ¡Escuchar es el primer paso para ayudar!' },
+      { icon: '🏃', text: 'Salir corriendo asustada sin escuchar nada', good: false, points: 0, feedback: '¡Oh no! 😟 Si Ana Lucía corre sin escuchar, no sabrá qué le pasa al río. Siempre hay que detenerse y prestar atención cuando la naturaleza nos habla.' },
+      { icon: '🪣', text: 'Sacar el agua con un balde para limpiarla ella sola', good: false, points: 5, feedback: 'Fue un intento valiente, pero un balde no es suficiente para limpiar todo un río. Lo más importante era escuchar para entender la verdadera causa del problema.' },
+    ]
+  },
+  {
+    icon: '🌳',
+    label: 'El bosque seco',
+    text: 'El río le susurró a Ana Lucía: <em>"Han cortado muchos árboles. Sin árboles, la tierra se cae al río y lo ensucia. Y sin árboles, el río se queda sin sombra y sin vida."</em>\n\nAna Lucía miró hacia el bosque y vio muchos tocones de árboles cortados. Su corazón se entristeció mucho. ¿Qué crees que debe hacer?',
+    choices: [
+      { icon: '🌱', text: 'Ir a buscar semillas para plantar árboles nuevos', good: true, points: 20, feedback: '¡Excelente idea! 🌟 Plantar árboles es una de las mejores formas de ayudar al río. Las raíces de los árboles sujetan la tierra y sus hojas dan sombra al agua. ¡Ana Lucía tomó la mejor decisión!' },
+      { icon: '😢', text: 'Solo quedarse llorando sin hacer nada', good: false, points: 0, feedback: '😟 Está bien sentir tristeza, pero también hay que actuar. Llorar solo no ayuda al río. ¡Los problemas se resuelven con valentía y acción!' },
+      { icon: '🪓', text: 'Cortar más árboles para hacer leña y venderla', good: false, points: 0, feedback: '¡Eso empeoraría el problema! 😱 Cortar más árboles haría que el río se ensuciara mucho más. Los árboles son amigos del río y debemos protegerlos.' },
+    ]
+  },
+  {
+    icon: '👴',
+    label: 'El Espíritu del Monte',
+    text: 'Ana Lucía subió al cerro El Tigre, un lugar sagrado donde, según la leyenda del pueblo, vivía el <strong>Espíritu Viejo del Monte</strong>, un sabio ancestral que protegía la vida del cantón.\n\nCuando llegó, el anciano espíritu la miró en silencio. Ana Lucía tenía los pies llenos de tierra y el corazón lleno de amor. ¿Cómo debe hablarle al espíritu?',
+    choices: [
+      { icon: '🙏', text: 'Con sinceridad, contándole la verdad desde el corazón', good: true, points: 20, feedback: '¡Perfecto! 🌟 El Espíritu del Monte se conmovió con las palabras sinceras de Ana Lucía. Los sabios no necesitan palabras complicadas, solo honestidad y amor. ¡El espíritu decidió ayudarla!' },
+      { icon: '📣', text: 'Gritarle y exigirle que solucione todo', good: false, points: 0, feedback: '😬 No es buena idea gritar o exigir. Los ancianos y los sabios merecen respeto. Hablar con calma y sinceridad siempre funciona mejor.' },
+      { icon: '🎁', text: 'Llevarle regalos costosos para que la ayude', good: false, points: 5, feedback: 'El Espíritu del Monte no necesita regalos materiales. Lo que le importa es que las personas amen y cuiden la naturaleza de verdad, no que traigan cosas.' },
+    ]
+  },
+  {
+    icon: '🏘️',
+    label: 'La plaza del pueblo',
+    text: 'A la mañana siguiente, Ana Lucía reunió a todos los vecinos en la <strong>plaza del pueblo</strong>. Muchos dudaban. Algunos pensaban que era solo una niña con su imaginación. Pero Ana Lucía recordó lo que el río le había dicho y se preparó para hablar.\n\n¿Cómo debe convencer a los vecinos?',
+    choices: [
+      { icon: '💬', text: 'Contarles lo que vio y sintió en el río con palabras claras', good: true, points: 20, feedback: '¡Muy bien! 🌟 Ana Lucía habló con calma y claridad. Les contó cómo el río ya no tenía peces, cómo el agua bajaba turbia, cómo los pájaros ya no cantaban como antes. Los vecinos comenzaron a recordar y a creerle.' },
+      { icon: '😠', text: 'Enojarse con los que no le creen y discutir con ellos', good: false, points: 0, feedback: '😟 Enojarse hace que las personas se cierren y no quieran escuchar. La paciencia y la explicación tranquila son mucho más efectivas para convencer a otros.' },
+      { icon: '🤫', text: 'No decir nada y esperar que alguien más lo solucione', good: false, points: 0, feedback: '¡Nooo! 😱 Si nadie habla, nadie sabrá del problema. Ana Lucía tiene una misión importante: ser la voz del río. ¡El silencio no salva bosques ni ríos!' },
+    ]
+  },
+  {
+    icon: '🌊',
+    label: '¡Todos a trabajar!',
+    text: 'Los vecinos del pueblo, al escuchar a Ana Lucía, comenzaron a recordar cómo era el río en su niñez: lleno de peces, limpio, con árboles que daban sombra. <strong>¡Decidieron unirse y actuar juntos!</strong>\n\nAhora hay que organizar el trabajo. ¿Cuál es la mejor forma de limpiar el río?',
+    choices: [
+      { icon: '🤝', text: 'Organizarse en grupos: unos limpian, otros plantan árboles', good: true, points: 20, feedback: '¡Brillante! 🌟 Trabajar en equipo organizado es mucho más efectivo. Un grupo recogió la basura del río, otro plantó árboles en las orillas, y otro cuidó que nadie tirara más desechos. ¡La comunidad es más fuerte unida!' },
+      { icon: '💧', text: 'Solo echar agua limpia al río desde sus casas', good: false, points: 5, feedback: 'Eso no sería suficiente. Si no se limpian los desechos y no se plantan árboles, el río seguirá siendo contaminado. Hay que atacar el problema desde la raíz.' },
+      { icon: '⏰', text: 'Esperar a que llueva para que el río se limpie solo', good: false, points: 0, feedback: '😟 La lluvia puede ayudar un poco, pero no resuelve el problema de fondo. Sin árboles, la lluvia arrastra más tierra al río. ¡Hay que tomar acción ahora!' },
+    ]
+  },
+  {
+    icon: '🌈',
+    label: '¡El río vuelve a vivir!',
+    text: 'Pasaron semanas de mucho trabajo. La comunidad plantó cientos de árboles, limpió las orillas del río y acordó no tirar más basura. Un día, <strong>Ana Lucía volvió al río</strong> y escuchó algo diferente: el agua cantaba feliz y cristalina. Los primeros peces volvieron a asomarse. Un pájaro azul se posó en su hombro.\n\nAna Lucía quiere enseñarles a los niños del pueblo a cuidar la naturaleza. ¿Cuál es la mejor manera?',
+    choices: [
+      { icon: '📖', text: 'Contarles la historia del río y llevarlos a conocerlo', good: true, points: 20, feedback: '🎉 ¡Lo lograron! Ana Lucía llevó a todos los niños al río. Les contó la historia, les mostró los árboles plantados, les enseñó a escuchar el agua. Así, la leyenda de la Niña del Cacao seguirá viva para siempre. 🌿🌊💚' },
+      { icon: '📵', text: 'Decirles que la naturaleza es aburrida y que jueguen en casa', good: false, points: 0, feedback: '😢 ¡Qué pena! Si los niños no conocen la naturaleza, no aprenderán a amarla y protegerla. El futuro del río depende de que las nuevas generaciones lo cuiden.' },
+      { icon: '🚧', text: 'Poner una cerca para que nadie se acerque al río', good: false, points: 5, feedback: 'Alejar a las personas no es la solución. Al contrario, cuando las personas conocen y aman un lugar, son las mejores guardianas. ¡La educación es más poderosa que una cerca!' },
+    ]
+  }
+];
+
+// ===== ESTADO =====
+let currentScene = 0;
+let points = 0;
+let hearts = 3;
+let answered = false;
+let selectedGood = false;
+let earnedMedals = [];
+
+function startGame() {
+  currentScene = 0;
+  points = 0;
+  hearts = 3;
+  earnedMedals = [];
+  showScreen('screen-game');
+  renderScene();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderScene() {
+  answered = false;
+  const s = scenes[currentScene];
+
+  document.getElementById('scene-icon').textContent = s.icon;
+  document.getElementById('scene-label').textContent = s.label;
+  document.getElementById('scene-step').textContent = `Paso ${currentScene + 1} de ${scenes.length}`;
+  document.getElementById('scene-text').innerHTML = s.text.replace(/\n/g, '<br>');
+  document.getElementById('points-display').textContent = points;
+  document.getElementById('hearts-display').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(3 - hearts);
+  document.getElementById('feedback-area').innerHTML = '';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('choices-label').style.display = 'block';
+
+  // Progress dots
+  const row = document.getElementById('progress-row');
+  row.innerHTML = '';
+  scenes.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i < currentScene ? ' done' : i === currentScene ? ' current' : '');
+    row.appendChild(dot);
+  });
+
+  // Choices
+  const area = document.getElementById('choices-area');
+  area.innerHTML = '';
+  const shuffled = [...s.choices].sort(() => Math.random() - 0.5);
+  shuffled.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-icon">${c.icon}</span> ${c.text}`;
+    btn.onclick = () => selectChoice(c, btn);
+    area.appendChild(btn);
+  });
+}
+
+function selectChoice(choice, btn) {
+  if (answered) return;
+  answered = true;
+
+  // Disable all buttons
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.style.opacity = '0.5';
+    b.style.cursor = 'default';
+    b.onclick = null;
+  });
+  btn.style.opacity = '1';
+  btn.style.background = choice.good
+    ? 'linear-gradient(135deg, #2d8a2d, #1a5a1a)'
+    : 'linear-gradient(135deg, #c85a1a, #8a3a0a)';
+
+  if (choice.good) {
+    points += choice.points;
+    selectedGood = true;
+  } else {
+    hearts = Math.max(0, hearts - 1);
+    points += choice.points;
+    selectedGood = false;
+  }
+
+  document.getElementById('points-display').textContent = points;
+  document.getElementById('hearts-display').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(3 - hearts);
+
+  // Feedback
+  const fb = document.createElement('div');
+  fb.className = 'feedback ' + (choice.good ? 'good' : 'bad');
+  fb.innerHTML = `<span class="feedback-icon">${choice.good ? '🌟' : '💡'}</span>${choice.feedback}`;
+  document.getElementById('feedback-area').appendChild(fb);
+
+  document.getElementById('choices-label').style.display = 'none';
+
+  // Next button
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = currentScene < scenes.length - 1 ? '¡Siguiente paso! →' : '🎉 ¡Ver resultado!';
+}
+
+function nextScene() {
+  currentScene++;
+  if (currentScene >= scenes.length) {
+    showResult();
+  } else {
+    renderScene();
+  }
+}
+
+function showResult() {
+  showScreen('screen-result');
+
+  const maxPoints = scenes.length * 20;
+  const pct = points / maxPoints;
+
+  let stars, title, color, msg;
+
+  if (pct === 1) {
+    stars = '⭐⭐⭐';
+    title = '¡Eres un guardián del río!';
+    color = '#2d6a2d';
+    msg = '¡Tomaste todas las decisiones perfectas! Ana Lucía está muy orgullosa de ti. El río Arenillas vuelve a brillar gracias a tu sabiduría. ¡Eres un verdadero guardián de la naturaleza!';
+    earnedMedals.push({ icon: '🏆', label: '¡Puntaje Perfecto!' });
+  } else if (pct >= 0.7) {
+    stars = '⭐⭐';
+    title = '¡Muy buen guardián!';
+    color = '#4a9a4a';
+    msg = '¡Lo hiciste muy bien! Ayudaste a Ana Lucía a salvar el río. Cometiste algunos errores, pero lo importante es que aprendiste de ellos. ¡La naturaleza te lo agradece!';
+  } else if (pct >= 0.4) {
+    stars = '⭐';
+    title = '¡Sigue aprendiendo!';
+    color = '#a07030';
+    msg = 'Ana Lucía necesita más ayuda. Intentaste salvar el río pero algunas decisiones no fueron las mejores. ¡Vuelve a intentarlo y aprende con cada paso!';
+  } else {
+    stars = '🌱';
+    title = '¡Inténtalo de nuevo!';
+    color = '#c85a1a';
+    msg = 'El río todavía necesita mucha ayuda. ¡No te rindas! Cada intento es una oportunidad para aprender a cuidar la naturaleza mejor. ¡Ana Lucía confía en ti!';
+  }
+
+  if (hearts === 3) earnedMedals.push({ icon: '💚', label: 'Sin perder vidas' });
+  if (points >= 100) earnedMedals.push({ icon: '🌊', label: 'Amigo del río' });
+
+  const medalsHTML = earnedMedals.length > 0
+    ? `<div class="medals">${earnedMedals.map(m => `<div class="medal">${m.icon} ${m.label}</div>`).join('')}</div>`
+    : '';
+
+  document.getElementById('result-content').innerHTML = `
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:3.5rem; animation: bounce 0.6s ease;">🌿</span>
+    </div>
+    <div class="result-title" style="color:${color};">${title}</div>
+    <div class="result-score">Obtuviste <strong>${points}</strong> de ${maxPoints} puntos</div>
+    <div class="stars">${stars}</div>
+    <div class="result-msg">${msg}</div>
+    ${medalsHTML}
+    <div style="background:#f0f7e8; border-radius:12px; padding:14px; margin-bottom:20px; text-align:center; border: 2px solid #b8d88a; color:#2c4a1c; font-size:0.95rem; line-height:1.6;">
+      <strong>🌍 ¿Sabías que...?</strong><br>
+      Los árboles que crecen junto a los ríos se llaman <em>bosques de galería</em>. Sus raíces limpian el agua, sus hojas dan sombra, y en sus ramas viven muchos animales. ¡Protegerlos es cuidar la vida!
+    </div>
+  `;
+}
+
+function restartGame() {
+  startGame();
+}
+</script>
+</body>
+</html>

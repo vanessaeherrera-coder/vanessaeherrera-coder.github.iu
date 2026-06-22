@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etsa y el Sol - Aventura Shuar</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(160deg, #1a0a2e 0%, #0d1f3c 50%, #0a2a1a 100%);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+  }
+
+  #game-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ---- STARS BG ---- */
+  .stars {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    background: white; animation: twinkle 2s infinite alternate;
+  }
+  @keyframes twinkle { from{opacity:.2} to{opacity:1} }
+
+  /* ---- SCREEN SYSTEM ---- */
+  .screen { display:none; width:100%; flex-direction:column; align-items:center; z-index:1; position:relative; }
+  .screen.active { display:flex; }
+
+  /* ---- TITLE SCREEN ---- */
+  .sun-title {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    text-align: center;
+    line-height: 1.1;
+    margin: 20px 0 10px;
+    filter: drop-shadow(0 0 20px #ffaa00);
+    animation: sunpulse 3s ease-in-out infinite;
+  }
+  @keyframes sunpulse { 0%,100%{filter:drop-shadow(0 0 15px #ffaa00)} 50%{filter:drop-shadow(0 0 40px #ff6600)} }
+
+  .sun-emoji { font-size: clamp(3rem, 10vw, 6rem); display:block; text-align:center; margin-bottom:10px; }
+
+  .subtitle { font-size: 1.1rem; color: #ffd98a; text-align:center; margin-bottom: 8px; }
+  .author-note { font-size: 0.85rem; color: #aad4ff; text-align:center; margin-bottom:30px; opacity:0.8; }
+
+  .btn-start {
+    background: linear-gradient(135deg, #ff8c00, #ff4500);
+    color: white; border: none; border-radius: 50px;
+    padding: 18px 50px; font-size: 1.3rem; cursor: pointer;
+    box-shadow: 0 0 30px #ff6600aa;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: bold; letter-spacing: 1px;
+    margin: 10px;
+  }
+  .btn-start:hover { transform: scale(1.05); box-shadow: 0 0 45px #ff6600cc; }
+  .btn-start:active { transform: scale(0.97); }
+
+  /* ---- PROGRESS BAR ---- */
+  .progress-bar-wrap {
+    width: 100%; background: rgba(255,255,255,0.1); border-radius:20px;
+    margin-bottom: 20px; height: 12px; overflow:hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius:20px;
+    background: linear-gradient(90deg, #ffaa00, #ff4500);
+    transition: width 0.6s ease;
+  }
+  .progress-label { font-size: 0.8rem; color: #ffd98a; margin-bottom:6px; text-align:right; width:100%; }
+
+  /* ---- HEARTS ---- */
+  .hearts-row { display:flex; gap:8px; margin-bottom:16px; align-self: flex-start; }
+  .heart { font-size: 1.5rem; transition: transform 0.3s; }
+  .heart.lost { filter: grayscale(1); opacity:0.3; }
+  @keyframes heartlost { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+
+  /* ---- SCENE CARD ---- */
+  .scene-card {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,180,0,0.3);
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    margin-bottom: 20px;
+    backdrop-filter: blur(4px);
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-illustration {
+    font-size: clamp(4rem, 12vw, 7rem);
+    text-align: center;
+    display: block;
+    margin-bottom: 12px;
+    animation: floatAnim 3s ease-in-out infinite;
+  }
+  @keyframes floatAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+  .scene-title {
+    font-size: 1.25rem; font-weight: bold; text-align:center;
+    color: #ffd98a; margin-bottom: 12px; letter-spacing:0.5px;
+  }
+  .scene-text {
+    font-size: 1.05rem; line-height: 1.75; color: #e8d5ff;
+    text-align: center;
+  }
+  .scene-text em { color: #ffcc44; font-style: normal; font-weight: bold; }
+
+  /* ---- CHALLENGE TYPES ---- */
+
+  /* CHOICE */
+  .choices-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; width: 100%; margin-top:4px;
+  }
+  .choice-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,200,100,0.3);
+    border-radius: 16px; padding: 14px 12px;
+    color: white; cursor: pointer; font-size: 0.95rem;
+    transition: all 0.2s; text-align:center; line-height:1.4;
+  }
+  .choice-btn:hover { background: rgba(255,200,100,0.18); border-color: #ffcc44; transform: scale(1.03); }
+  .choice-btn.correct { background: rgba(50,200,100,0.25); border-color: #50e888; }
+  .choice-btn.wrong { background: rgba(220,50,50,0.25); border-color: #ff6666; }
+  .choice-btn:disabled { cursor: default; transform:none; }
+
+  /* DRAG ORDER */
+  .drag-area { display:flex; flex-direction:column; gap:10px; width:100%; }
+  .drag-item {
+    background: rgba(255,200,100,0.12);
+    border: 1.5px dashed rgba(255,200,100,0.4);
+    border-radius: 14px; padding: 12px 16px;
+    cursor: grab; font-size: 0.95rem; display:flex;
+    align-items:center; gap:10px; transition: all 0.2s;
+    user-select:none;
+  }
+  .drag-item:hover { background: rgba(255,200,100,0.22); }
+  .drag-item.dragging { opacity:0.5; }
+  .drag-item .drag-icon { font-size:1.3rem; }
+
+  .check-btn {
+    background: linear-gradient(135deg, #1d9e75, #0f6e56);
+    color: white; border: none; border-radius: 50px;
+    padding: 13px 36px; font-size: 1rem; cursor: pointer;
+    margin-top: 14px; font-weight: bold; transition: all 0.2s;
+  }
+  .check-btn:hover { transform: scale(1.04); }
+
+  /* MEMORY */
+  .memory-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; width: 100%; margin-top: 6px;
+  }
+  .mem-card {
+    aspect-ratio: 1; border-radius: 12px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 1.9rem;
+    background: linear-gradient(135deg, #2a1560, #1a0a2e);
+    border: 1.5px solid rgba(255,200,100,0.25);
+    transition: transform 0.3s; position:relative; overflow:hidden;
+  }
+  .mem-card .card-back { font-size: 1.6rem; }
+  .mem-card .card-front {
+    position:absolute; font-size:1.9rem;
+    transform: rotateY(90deg); transition: transform 0.3s;
+  }
+  .mem-card.flipped .card-back { transform: rotateY(90deg); transition: transform 0.3s; }
+  .mem-card.flipped .card-front { transform: rotateY(0deg); }
+  .mem-card.matched { background: rgba(30,160,90,0.3); border-color: #50e888; cursor:default; }
+  .mem-card:hover:not(.matched) { transform: scale(1.06); }
+
+  /* PAINT */
+  .paint-area { width:100%; }
+  .paint-options { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:12px; }
+  .paint-slot {
+    border-radius: 14px; border: 2px dashed rgba(255,200,100,0.3);
+    padding: 12px; display:flex; align-items:center;
+    gap:8px; font-size:0.9rem; background: rgba(255,255,255,0.05);
+    min-width: 140px; flex:1;
+  }
+  .paint-slot .emoji-slot { font-size:1.5rem; }
+  .color-choice {
+    width: 40px; height: 40px; border-radius: 50%; cursor:pointer;
+    border: 3px solid transparent; transition: all 0.2s;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem;
+  }
+  .color-choice:hover, .color-choice.selected { border-color: white; transform: scale(1.15); }
+  .color-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:14px; }
+
+  /* FEEDBACK OVERLAY */
+  .feedback {
+    position: fixed; inset:0; z-index:100;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    pointer-events:none; opacity:0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show { opacity:1; pointer-events:all; }
+  .feedback-box {
+    background: rgba(10,20,40,0.92);
+    border-radius: 24px; padding: 30px 40px;
+    text-align:center; border: 2px solid;
+    max-width: 400px;
+  }
+  .feedback-box.good { border-color: #50e888; }
+  .feedback-box.bad { border-color: #ff6666; }
+  .feedback-icon { font-size: 3.5rem; margin-bottom:10px; display:block; }
+  .feedback-msg { font-size: 1.2rem; font-weight:bold; margin-bottom:8px; }
+  .feedback-sub { font-size: 0.95rem; color: #aad4ff; margin-bottom:16px; }
+  .feedback-continue {
+    background: linear-gradient(135deg, #ff8c00, #ff4500);
+    color: white; border: none; border-radius: 50px;
+    padding: 12px 36px; font-size: 1rem; cursor: pointer; font-weight:bold;
+    pointer-events: all;
+  }
+
+  /* RESULTS */
+  .results-stars { display:flex; gap:12px; justify-content:center; font-size:3rem; margin:20px 0; }
+  .results-score { font-size: 2rem; font-weight:bold; color: #ffd98a; text-align:center; }
+  .results-msg { font-size:1.1rem; color:#e8d5ff; text-align:center; margin:12px 0 24px; }
+  .medals-row { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+  .medal { text-align:center; font-size:0.85rem; color:#aad4ff; }
+  .medal .m-icon { font-size:2rem; display:block; }
+
+  /* STORY VIEWER */
+  .story-page {
+    background: rgba(255,255,255,0.06); border-radius:20px;
+    padding: 24px; width:100%; text-align:center; margin-bottom:16px;
+  }
+  .story-big-emoji { font-size: 4rem; display:block; margin-bottom:12px; }
+  .story-text { font-size: 1.05rem; line-height:1.8; color: #e8d5ff; }
+  .nav-row { display:flex; gap:12px; justify-content:center; margin-top:8px; }
+  .nav-btn {
+    background: rgba(255,200,100,0.15); border: 1.5px solid rgba(255,200,100,0.35);
+    color: white; border-radius: 50px; padding: 10px 28px;
+    cursor:pointer; font-size:0.95rem; transition: all 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,200,100,0.3); }
+  .nav-btn:disabled { opacity:0.3; cursor:default; }
+
+  /* WORD SCRAMBLE */
+  .scramble-letters {
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    margin: 12px 0; min-height:60px;
+  }
+  .letter-tile {
+    width:44px; height:44px; border-radius:10px;
+    background: linear-gradient(135deg, #533abc, #2a1560);
+    border: 1.5px solid rgba(200,160,255,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; font-weight:bold; cursor:pointer;
+    transition: all 0.2s; user-select:none;
+  }
+  .letter-tile:hover { transform:scale(1.1); }
+  .letter-tile.used { opacity:0.2; cursor:default; transform:none; }
+  .answer-row {
+    display:flex; gap:8px; justify-content:center; margin-bottom:12px;
+    flex-wrap:wrap; min-height: 54px;
+  }
+  .answer-slot {
+    width:44px; height:44px; border-radius:10px;
+    background: rgba(255,200,100,0.08);
+    border: 2px dashed rgba(255,200,100,0.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; font-weight:bold; cursor:pointer;
+    transition: all 0.2s;
+  }
+  .answer-slot.filled { background: rgba(255,200,100,0.2); border-style:solid; border-color: #ffcc44; }
+
+  /* FIREWORKS */
+  .firework { position:fixed; pointer-events:none; z-index:200; font-size:1.5rem; animation: fly 1.2s ease-out forwards; }
+  @keyframes fly { 0%{transform:translateY(0) scale(0); opacity:1} 100%{transform:translateY(-200px) scale(1.5); opacity:0} }
+
+  /* NAV TOP */
+  .top-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    width:100%; margin-bottom:16px; z-index:2; position:relative;
+  }
+  .score-badge {
+    background: rgba(255,200,0,0.15); border: 1.5px solid rgba(255,200,0,0.3);
+    border-radius: 50px; padding: 6px 16px; font-size: 0.9rem; color: #ffd98a;
+  }
+  .chapter-badge {
+    background: rgba(150,100,255,0.15); border: 1.5px solid rgba(150,100,255,0.3);
+    border-radius: 50px; padding: 6px 16px; font-size: 0.85rem; color: #c8b4ff;
+  }
+
+  @media(max-width:500px) {
+    .choices-grid { grid-template-columns:1fr; }
+    .memory-grid { grid-template-columns: repeat(4,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div id="game-container">
+
+  <!-- TITLE SCREEN -->
+  <div class="screen active" id="screen-title">
+    <span class="sun-emoji">☀️</span>
+    <div class="sun-title">Etsa<br>y el Sol</div>
+    <p class="subtitle">Una aventura shuar de valentía y verdad</p>
+    <p class="author-note">Basado en el cuento de Oswaldo Livichuzca</p>
+    <button class="btn-start" onclick="startGame()">¡Comenzar aventura! 🌿</button>
+    <button class="btn-start" style="background:linear-gradient(135deg,#1d6e9e,#0a3d6e); box-shadow: 0 0 20px #1d6e9eaa;" onclick="showStory()">📖 Leer el cuento</button>
+  </div>
+
+  <!-- STORY READER -->
+  <div class="screen" id="screen-story">
+    <div class="top-bar">
+      <button class="nav-btn" onclick="goTitle()" style="padding:8px 18px;">← Volver</button>
+      <span class="chapter-badge" id="story-counter">Página 1 / 8</span>
+    </div>
+    <div class="story-page" id="story-page-content"></div>
+    <div class="nav-row">
+      <button class="nav-btn" id="story-prev" onclick="storyNav(-1)">◀ Anterior</button>
+      <button class="nav-btn" id="story-next" onclick="storyNav(1)">Siguiente ▶</button>
+    </div>
+    <button class="btn-start" style="margin-top:16px;" onclick="startGame()">¡Jugar ahora! 🎮</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="screen-game">
+    <div class="top-bar">
+      <div class="hearts-row" id="hearts-display"></div>
+      <div class="score-badge">⭐ <span id="score-display">0</span></div>
+    </div>
+    <div class="progress-label" id="progress-label">Desafío 1 de 8</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div id="challenge-area" style="width:100%;"></div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="screen-results">
+    <span class="sun-emoji">🌟</span>
+    <div class="sun-title" style="font-size:2rem">¡Aventura<br>completada!</div>
+    <div class="results-stars" id="results-stars"></div>
+    <div class="results-score" id="results-score"></div>
+    <div class="results-msg" id="results-msg"></div>
+    <div class="medals-row" id="medals-row"></div>
+    <button class="btn-start" onclick="startGame()">Jugar otra vez 🔄</button>
+    <button class="btn-start" style="background:linear-gradient(135deg,#1d6e9e,#0a3d6e); box-shadow:0 0 20px #1d6e9eaa; margin-top:8px;" onclick="goTitle()">🏠 Inicio</button>
+  </div>
+
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div class="feedback" id="feedback-overlay">
+  <div class="feedback-box" id="feedback-box">
+    <span class="feedback-icon" id="feedback-icon"></span>
+    <div class="feedback-msg" id="feedback-msg"></div>
+    <div class="feedback-sub" id="feedback-sub"></div>
+    <button class="feedback-continue" onclick="nextChallenge()">Continuar ▶</button>
+  </div>
+</div>
+
+<script>
+// ===== STARS =====
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.cssText=`width:${Math.random()*3+1}px;height:${s.style.width};left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${1.5+Math.random()*2}s`;
+    c.appendChild(s);
+  }
+})();
+
+// ===== STATE =====
+let hearts = 3;
+let score = 0;
+let currentChallenge = 0;
+let challengeAnswered = false;
+let dragSource = null;
+let memFlipped = [];
+let memMatched = 0;
+let memCards = [];
+let selectedColor = null;
+let paintAnswers = {};
+let scrambleAnswer = [];
+let scrambleTarget = '';
+
+// ===== STORY DATA =====
+const storyPages = [
+  { emoji:'🌿', text:'En lo profundo de la selva del cantón Limón Indanza, las voces antiguas todavía susurran historias entre los árboles y los ríos. Este es el mito de <em>Etsa</em>, el Sol, un ser sabio que vivió entre los hombres y cuidó el equilibrio de la selva.' },
+  { emoji:'👹', text:'Había un espíritu malévolo llamado <em>Iwia</em>. Este ser terrible atrapaba a los shuar en su bolsa de cuero y los devoraba. Un día, capturó a una pareja de humanos, pero dejó con vida a su pequeño hijo: <em>Etsa</em>.' },
+  { emoji:'🌱', text:'Etsa creció creyendo que Iwia era su verdadero padre. Pero los dioses le dieron un don especial: era el señor de los animales diurnos y podía transformarse en cualquier criatura del día.' },
+  { emoji:'🕊️', text:'Una noche, Etsa encontró a <em>Yápankam</em>, una palomita blanca que seguía cantando sola. "¿También me quitarás la vida?" preguntó ella. Etsa respondió: "No, ya he causado demasiado silencio."' },
+  { emoji:'💥', text:'Entonces, Yápankam le reveló la verdad: <em>Iwia no era su padre</em>. Él fue quien devoró a sus verdaderos padres. Un rugido nació en el corazón de Etsa y los recuerdos regresaron como un trueno.' },
+  { emoji:'🦅', text:'Etsa recogió todas las plumas que encontró, las puso en su bodoquera y sopló con la fuerza del Sol. ¡Miles de aves renacieron! Sus cantos llenaron la selva como una gran fiesta de colores y sonidos.' },
+  { emoji:'👨‍🏫', text:'Después de muchos años, Etsa se convirtió en maestro de la comunidad. Allí conoció a <em>Kujancham</em>, un joven cazador impaciente. Aunque Etsa le enseñó a respetar la naturaleza, Kujancham muchas veces desoía sus enseñanzas.' },
+  { emoji:'☀️', text:'Kujancham comió del fruto prohibido. Entonces, Etsa subió al cielo y cortó la escalera que unía el mundo con los dioses. Desde ese día, el Sol quedó arriba, vigilando desde lo alto. <em>"Nadie debe romper la armonía de la selva. Cada ser merece vivir."</em>' },
+];
+
+let storyPage = 0;
+function showStory() {
+  storyPage = 0;
+  renderStoryPage();
+  setScreen('story');
+}
+function renderStoryPage() {
+  const p = storyPages[storyPage];
+  document.getElementById('story-page-content').innerHTML = `
+    <span class="story-big-emoji">${p.emoji}</span>
+    <p class="story-text">${p.text}</p>
+  `;
+  document.getElementById('story-counter').textContent = `Página ${storyPage+1} / ${storyPages.length}`;
+  document.getElementById('story-prev').disabled = storyPage === 0;
+  document.getElementById('story-next').disabled = storyPage === storyPages.length-1;
+}
+function storyNav(d) { storyPage = Math.max(0,Math.min(storyPages.length-1,storyPage+d)); renderStoryPage(); }
+function goTitle() { setScreen('title'); }
+
+// ===== CHALLENGES =====
+const challenges = [
+  {
+    type: 'choice',
+    emoji: '👹',
+    title: '¿Quién era Iwia?',
+    text: 'En la selva vivía un espíritu terrible. ¿Qué hacía Iwia con los shuar?',
+    options: [
+      { text: '🍃 Los ayudaba a cazar', correct: false },
+      { text: '💼 Los encerraba en su bolsa y los devoraba', correct: true },
+      { text: '🎵 Les enseñaba canciones', correct: false },
+      { text: '🌊 Los llevaba al río', correct: false },
+    ],
+    feedback_good: '¡Muy bien! Iwia era un ser malévolo que atrapaba a los shuar.',
+    feedback_bad: 'Iwia era muy peligroso: atrapaba a los shuar en su bolsa de cuero.',
+  },
+  {
+    type: 'scramble',
+    emoji: '🕊️',
+    title: 'Completa la palabra',
+    text: 'La palomita blanca que habló con Etsa se llamaba...',
+    word: 'YAPANKAM',
+    hint: 'Pista: Era un ave que cantaba sola entre las montañas',
+    feedback_good: '¡Correcto! Yápankam era la palomita que le dijo la verdad a Etsa.',
+    feedback_bad: 'La palomita se llamaba YÁPANKAM. Era muy valiente al decir la verdad.',
+  },
+  {
+    type: 'memory',
+    emoji: '🧠',
+    title: 'Juego de memoria',
+    text: 'Encuentra los pares de personajes y elementos del cuento. ¡Voltea las tarjetas!',
+    pairs: ['☀️','👹','🕊️','🌿','🦅','🌳'],
+    feedback_good: '¡Increíble memoria! Recuerdas muy bien los elementos del cuento.',
+    feedback_bad: 'No importa, lo importante es intentarlo. ¡Sigue practicando!',
+  },
+  {
+    type: 'order',
+    emoji: '📖',
+    title: 'Ordena la historia',
+    text: 'Arrastra los eventos en el orden correcto, ¡del primero al último!',
+    items: [
+      { id:0, text:'🕊️ Yápankam revela la verdad a Etsa', order:2 },
+      { id:1, text:'👹 Iwia devora a los padres de Etsa', order:0 },
+      { id:2, text:'🦅 Miles de aves renacen', order:3 },
+      { id:3, text:'🌱 Etsa crece creyendo que Iwia es su padre', order:1 },
+    ],
+    feedback_good: '¡Excelente! Recuerdas perfectamente el orden de la historia.',
+    feedback_bad: 'El orden correcto es: Iwia devora → Etsa crece → Yápankam habla → Aves renacen.',
+  },
+  {
+    type: 'choice',
+    emoji: '🦅',
+    title: 'El poder de Etsa',
+    text: '¿Cómo hizo Etsa para que las aves volvieran a la vida?',
+    options: [
+      { text: '🌧️ Llamó a la lluvia', correct: false },
+      { text: '🪄 Usó magia de los dioses', correct: false },
+      { text: '🪶 Recogió plumas, las puso en su bodoquera y sopló', correct: true },
+      { text: '🌱 Plantó árboles especiales', correct: false },
+    ],
+    feedback_good: '¡Exacto! Sopló con la fuerza del Sol y renacieron miles de aves.',
+    feedback_bad: 'Etsa recogió plumas, las puso en su bodoquera y sopló. ¡Las aves renacieron!',
+  },
+  {
+    type: 'paint',
+    emoji: '🎨',
+    title: '¡Colorea el cuento!',
+    text: 'Elige el color correcto para cada elemento del cuento shuar.',
+    slots: [
+      { emoji:'☀️', name:'El Sol (Etsa)', correct:'amarillo', options:['amarillo','azul','verde','rojo'] },
+      { emoji:'🌿', name:'La selva', correct:'verde', options:['amarillo','rojo','verde','morado'] },
+      { emoji:'🌙', name:'La noche de Iwia', correct:'morado', options:'azul,amarillo,morado,verde'.split(',') },
+    ],
+    feedback_good: '¡Qué artista! Elegiste los colores perfectos para el cuento.',
+    feedback_bad: 'El Sol es amarillo, la selva es verde, y la noche de Iwia es oscura/morada.',
+  },
+  {
+    type: 'choice',
+    emoji: '👨‍🏫',
+    title: 'Kujancham y la enseñanza',
+    text: '¿Qué hizo mal Kujancham que enojó a Etsa?',
+    options: [
+      { text: '🏃 Corrió más rápido que Etsa', correct: false },
+      { text: '🍎 Comió del fruto prohibido del árbol sagrado', correct: true },
+      { text: '💧 Bebió agua del río equivocado', correct: false },
+      { text: '🎯 Cazó sin permiso', correct: false },
+    ],
+    feedback_good: '¡Correcto! Kujancham rompió la regla más importante: no comer del fruto prohibido.',
+    feedback_bad: 'Kujancham comió del fruto prohibido del árbol de numpi. Rompió el equilibrio.',
+  },
+  {
+    type: 'choice',
+    emoji: '💡',
+    title: 'La moraleja del cuento',
+    text: '¿Cuál es la enseñanza más importante del cuento de Etsa?',
+    options: [
+      { text: '🏆 Los más fuertes siempre ganan', correct: false },
+      { text: '🤫 Es mejor guardar secretos', correct: false },
+      { text: '🌿 Nadie debe romper la armonía de la selva. Cada ser merece vivir.', correct: true },
+      { text: '🏠 Nunca salgas de tu casa', correct: false },
+    ],
+    feedback_good: '¡Perfecto! Aprendiste la moraleja del cuento shuar. ¡Eres muy sabio/a!',
+    feedback_bad: 'La moraleja es: "Nadie debe romper la armonía de la selva. Cada ser merece vivir."',
+  },
+];
+
+// ===== GAME FLOW =====
+function startGame() {
+  hearts = 3;
+  score = 0;
+  currentChallenge = 0;
+  challengeAnswered = false;
+  setScreen('game');
+  renderChallenge();
+}
+
+function renderChallenge() {
+  challengeAnswered = false;
+  const c = challenges[currentChallenge];
+  updateHUD();
+  const area = document.getElementById('challenge-area');
+  area.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'scene-card';
+  card.innerHTML = `
+    <span class="scene-illustration">${c.emoji}</span>
+    <div class="scene-title">${c.title}</div>
+    <div class="scene-text">${c.text}</div>
+  `;
+  area.appendChild(card);
+
+  const challengeDiv = document.createElement('div');
+  challengeDiv.style.width = '100%';
+
+  switch(c.type) {
+    case 'choice': renderChoice(c, challengeDiv); break;
+    case 'order': renderOrder(c, challengeDiv); break;
+    case 'memory': renderMemory(c, challengeDiv); break;
+    case 'paint': renderPaint(c, challengeDiv); break;
+    case 'scramble': renderScramble(c, challengeDiv); break;
+  }
+  area.appendChild(challengeDiv);
+}
+
+function updateHUD() {
+  document.getElementById('score-display').textContent = score;
+  const h = document.getElementById('hearts-display');
+  h.innerHTML = '';
+  for(let i=0;i<3;i++){
+    const hrt = document.createElement('span');
+    hrt.className = 'heart' + (i >= hearts ? ' lost' : '');
+    hrt.textContent = '❤️';
+    h.appendChild(hrt);
+  }
+  const prog = ((currentChallenge) / challenges.length) * 100;
+  document.getElementById('progress-bar').style.width = prog + '%';
+  document.getElementById('progress-label').textContent = `Desafío ${currentChallenge+1} de ${challenges.length}`;
+}
+
+// ===== CHOICE =====
+function renderChoice(c, el) {
+  const grid = document.createElement('div');
+  grid.className = 'choices-grid';
+  c.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => {
+      if(challengeAnswered) return;
+      challengeAnswered = true;
+      grid.querySelectorAll('.choice-btn').forEach(b => b.disabled=true);
+      if(opt.correct) {
+        btn.classList.add('correct');
+        score += 10;
+        showFeedback(true, '¡Correcto! 🎉', c.feedback_good);
+      } else {
+        btn.classList.add('wrong');
+        grid.querySelectorAll('.choice-btn')[c.options.findIndex(o=>o.correct)].classList.add('correct');
+        loseHeart();
+        showFeedback(false, '¡Casi! 😅', c.feedback_bad);
+      }
+    };
+    grid.appendChild(btn);
+  });
+  el.appendChild(grid);
+}
+
+// ===== SCRAMBLE =====
+function renderScramble(c, el) {
+  scrambleTarget = c.word;
+  scrambleAnswer = [];
+  const letters = c.word.split('').map((l,i)=>({l,i,used:false}));
+  // shuffle
+  for(let i=letters.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[letters[i],letters[j]]=[letters[j],letters[i]];}
+
+  const hint = document.createElement('p');
+  hint.style.cssText='text-align:center;color:#aad4ff;font-size:0.85rem;margin-bottom:12px;';
+  hint.textContent = c.hint;
+  el.appendChild(hint);
+
+  const ansRow = document.createElement('div');
+  ansRow.className = 'answer-row';
+  ansRow.id = 'ans-row';
+  for(let i=0;i<c.word.length;i++){
+    const slot = document.createElement('div');
+    slot.className='answer-slot';
+    slot.id='slot-'+i;
+    slot.onclick=()=>removeFromAnswer(i);
+    ansRow.appendChild(slot);
+  }
+  el.appendChild(ansRow);
+
+  const letRow = document.createElement('div');
+  letRow.className = 'scramble-letters';
+  letRow.id = 'let-row';
+  letters.forEach((obj,idx)=>{
+    const tile = document.createElement('div');
+    tile.className='letter-tile';
+    tile.id='tile-'+idx;
+    tile.textContent=obj.l;
+    tile.dataset.letter=obj.l;
+    tile.dataset.origIdx=obj.i;
+    tile.onclick=()=>addToAnswer(tile, obj.l, idx);
+    letRow.appendChild(tile);
+  });
+  el.appendChild(letRow);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className='check-btn';
+  checkBtn.style.display='block';checkBtn.style.margin='12px auto 0';
+  checkBtn.textContent='✅ Comprobar';
+  checkBtn.onclick=()=>{
+    if(challengeAnswered) return;
+    const ans = scrambleAnswer.map(x=>x||'').join('');
+    if(ans === scrambleTarget){
+      challengeAnswered=true;
+      score+=10;
+      showFeedback(true,'¡Correcto! 🎉',c.feedback_good);
+    } else if(ans.length === scrambleTarget.length){
+      challengeAnswered=true;
+      loseHeart();
+      showFeedback(false,'¡Casi! 😅',c.feedback_bad);
+    }
+  };
+  el.appendChild(checkBtn);
+}
+
+function addToAnswer(tile, letter, tileIdx) {
+  if(tile.classList.contains('used')) return;
+  const pos = scrambleAnswer.findIndex(x=>x===null||x===undefined);
+  const nextPos = scrambleAnswer.length < scrambleTarget.length ? scrambleAnswer.length : -1;
+  const slot = nextPos >= 0 ? document.getElementById('slot-'+scrambleAnswer.length) : null;
+  if(scrambleAnswer.length >= scrambleTarget.length) return;
+  const slotsAll = document.querySelectorAll('.answer-slot');
+  let emptySlot = -1;
+  for(let i=0;i<slotsAll.length;i++){ if(!slotsAll[i].classList.contains('filled')){emptySlot=i;break;} }
+  if(emptySlot<0) return;
+  slotsAll[emptySlot].textContent=letter;
+  slotsAll[emptySlot].classList.add('filled');
+  slotsAll[emptySlot].dataset.tileIdx=tileIdx;
+  tile.classList.add('used');
+  if(!scrambleAnswer[emptySlot]) scrambleAnswer[emptySlot]=letter;
+  else scrambleAnswer.push(letter);
+  scrambleAnswer[emptySlot]=letter;
+}
+
+function removeFromAnswer(slotIdx) {
+  const slot = document.getElementById('slot-'+slotIdx);
+  if(!slot||!slot.classList.contains('filled')) return;
+  const tileIdx = slot.dataset.tileIdx;
+  slot.textContent=''; slot.classList.remove('filled'); slot.dataset.tileIdx='';
+  scrambleAnswer[slotIdx]=null;
+  const tile = document.getElementById('tile-'+tileIdx);
+  if(tile) tile.classList.remove('used');
+}
+
+// ===== ORDER =====
+function renderOrder(c, el) {
+  const items = [...c.items].sort(()=>Math.random()-0.5);
+  const area = document.createElement('div');
+  area.className='drag-area';
+  area.id='drag-area';
+
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='drag-item';
+    div.draggable=true;
+    div.dataset.id=item.id;
+    div.innerHTML=`<span class="drag-icon">☰</span><span>${item.text}</span>`;
+    div.addEventListener('dragstart',e=>{dragSource=div;div.classList.add('dragging');});
+    div.addEventListener('dragend',()=>{div.classList.remove('dragging');dragSource=null;});
+    div.addEventListener('dragover',e=>{e.preventDefault();});
+    div.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragSource&&dragSource!==div){
+        const par=div.parentNode;
+        const all=[...par.children];
+        const si=all.indexOf(dragSource), di=all.indexOf(div);
+        if(si<di) par.insertBefore(dragSource,div.nextSibling);
+        else par.insertBefore(dragSource,div);
+      }
+    });
+    area.appendChild(div);
+  });
+  el.appendChild(area);
+
+  const checkBtn=document.createElement('button');
+  checkBtn.className='check-btn';checkBtn.style.display='block';checkBtn.style.margin='14px auto 0';
+  checkBtn.textContent='✅ ¡Listo!';
+  checkBtn.onclick=()=>{
+    if(challengeAnswered)return;
+    const currentOrder=[...document.querySelectorAll('#drag-area .drag-item')].map(d=>parseInt(d.dataset.id));
+    const correctOrder=[...c.items].sort((a,b)=>a.order-b.order).map(i=>i.id);
+    if(JSON.stringify(currentOrder)===JSON.stringify(correctOrder)){
+      challengeAnswered=true;score+=10;
+      showFeedback(true,'¡Orden correcto! 🎉',c.feedback_good);
+    } else {
+      challengeAnswered=true;loseHeart();
+      showFeedback(false,'¡Casi! 😅',c.feedback_bad);
+    }
+  };
+  el.appendChild(checkBtn);
+}
+
+// ===== MEMORY =====
+function renderMemory(c, el) {
+  memFlipped=[];memMatched=0;
+  const pairsArr = [...c.pairs,...c.pairs].sort(()=>Math.random()-0.5);
+  memCards = pairsArr;
+  const grid=document.createElement('div');grid.className='memory-grid';grid.id='mem-grid';
+  pairsArr.forEach((sym,idx)=>{
+    const card=document.createElement('div');card.className='mem-card';card.dataset.sym=sym;card.dataset.idx=idx;
+    card.innerHTML=`<span class="card-back">🟣</span><span class="card-front">${sym}</span>`;
+    card.onclick=()=>flipCard(card,idx,sym,c);
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+function flipCard(card,idx,sym,c){
+  if(challengeAnswered||card.classList.contains('matched')||card.classList.contains('flipped')||memFlipped.length>=2) return;
+  card.classList.add('flipped');
+  memFlipped.push({card,sym,idx});
+  if(memFlipped.length===2){
+    if(memFlipped[0].sym===memFlipped[1].sym){
+      memFlipped.forEach(x=>x.card.classList.add('matched'));
+      memMatched++;memFlipped=[];
+      if(memMatched===memCards.length/2){
+        challengeAnswered=true;score+=10;
+        setTimeout(()=>showFeedback(true,'¡Memoria perfecta! 🧠',c.feedback_good),300);
+      }
+    } else {
+      setTimeout(()=>{memFlipped.forEach(x=>x.card.classList.remove('flipped'));memFlipped=[];},900);
+    }
+  }
+}
+
+// ===== PAINT =====
+const colorMap = { amarillo:'#FFD700',verde:'#22bb55',azul:'#2299ff',rojo:'#ff4444',morado:'#9944ff',naranja:'#ff8c00' };
+function renderPaint(c, el) {
+  paintAnswers = {};
+  const area=document.createElement('div');area.className='paint-area';
+  c.slots.forEach((slot,si)=>{
+    const slotDiv=document.createElement('div');slotDiv.className='paint-slot';
+    slotDiv.innerHTML=`<span class="emoji-slot">${slot.emoji}</span><span>${slot.name}</span>`;
+    slotDiv.id='pslot-'+si;
+    area.appendChild(slotDiv);
+    const colorRow=document.createElement('div');colorRow.className='color-row';
+    slot.options.forEach(col=>{
+      const btn=document.createElement('div');btn.className='color-choice';
+      btn.style.background=colorMap[col]||col;
+      btn.title=col;btn.dataset.col=col;btn.dataset.si=si;
+      btn.onclick=()=>selectPaintColor(btn,si,col,slot,c);
+      colorRow.appendChild(btn);
+    });
+    area.appendChild(colorRow);
+  });
+  el.appendChild(area);
+}
+
+function selectPaintColor(btn,si,col,slot,c){
+  document.querySelectorAll(`.color-choice[data-si="${si}"]`).forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  paintAnswers[si]=col;
+  document.getElementById('pslot-'+si).style.borderColor=colorMap[col];
+  document.getElementById('pslot-'+si).style.background=colorMap[col]+'22';
+  if(Object.keys(paintAnswers).length===c.slots.length){
+    const allCorrect=c.slots.every((s,i)=>paintAnswers[i]===s.correct);
+    if(!challengeAnswered){
+      challengeAnswered=true;
+      if(allCorrect){score+=10;showFeedback(true,'¡Artista shuar! 🎨',c.feedback_good);}
+      else{loseHeart();showFeedback(false,'¡Casi! 😅',c.feedback_bad);}
+    }
+  }
+}
+
+// ===== FEEDBACK =====
+function showFeedback(good, title, sub) {
+  const overlay=document.getElementById('feedback-overlay');
+  const box=document.getElementById('feedback-box');
+  document.getElementById('feedback-icon').textContent = good ? '🎉' : '😅';
+  document.getElementById('feedback-msg').textContent = title;
+  document.getElementById('feedback-sub').textContent = sub;
+  box.className='feedback-box '+(good?'good':'bad');
+  overlay.classList.add('show');
+  if(good) spawnFireworks();
+}
+
+function nextChallenge() {
+  document.getElementById('feedback-overlay').classList.remove('show');
+  currentChallenge++;
+  if(currentChallenge >= challenges.length) {
+    showResults();
+  } else {
+    renderChallenge();
+  }
+}
+
+function loseHeart() {
+  hearts = Math.max(0,hearts-1);
+}
+
+// ===== RESULTS =====
+function showResults() {
+  setScreen('results');
+  const pct = score / (challenges.length * 10);
+  let stars = pct >= 0.8 ? 3 : pct >= 0.5 ? 2 : 1;
+  document.getElementById('results-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+  document.getElementById('results-score').textContent = `${score} / ${challenges.length*10} puntos`;
+  let msg = stars===3 ? '¡Eres un verdadero guardián de la selva shuar! 🌿☀️' : stars===2 ? '¡Muy bien! Etsa estaría orgulloso/a de ti. 🦅' : '¡Sigue aprendiendo sobre la cultura shuar! 📖';
+  document.getElementById('results-msg').textContent = msg;
+  const medals = [
+    { icon:'🌿', name:'Guardián de la selva' },
+    { icon:'☀️', name:'Amigo de Etsa' },
+    { icon:'🕊️', name:'Amigo de Yápankam' },
+  ];
+  const mr=document.getElementById('medals-row');mr.innerHTML='';
+  medals.slice(0,stars).forEach(m=>{
+    const d=document.createElement('div');d.className='medal';
+    d.innerHTML=`<span class="m-icon">${m.icon}</span>${m.name}`;mr.appendChild(d);
+  });
+  spawnFireworks();
+}
+
+// ===== FIREWORKS =====
+function spawnFireworks() {
+  const emojis=['🌟','⭐','✨','🎉','🎊','💫','🌈'];
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');el.className='firework';
+      el.style.left=Math.random()*90+'vw';el.style.top='80vh';
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),1400);
+    },i*120);
+  }
+}
+
+// ===== UTILS =====
+function setScreen(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

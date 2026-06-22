@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz - Los Gagones</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --negro: #0a0a0a;
+    --dorado: #c9a84c;
+    --dorado-claro: #e8c97a;
+    --rojo: #8b1a1a;
+    --rojo-claro: #c0392b;
+    --gris: #1a1a1a;
+    --gris-medio: #2d2d2d;
+    --blanco: #f0e8d5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--negro);
+    font-family: 'Crimson Text', serif;
+    color: var(--blanco);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(139,26,26,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%);
+  }
+
+  .contenedor {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+
+  .cabecera {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .cabecera::before {
+    content: '🐈‍⬛';
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+    animation: flotar 3s ease-in-out infinite;
+  }
+
+  @keyframes flotar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .cabecera h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--dorado);
+    text-shadow: 0 0 30px rgba(201,168,76,0.4);
+    letter-spacing: 3px;
+    line-height: 1.3;
+  }
+
+  .cabecera p {
+    color: #888;
+    font-style: italic;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+
+  .linea-decorativa {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .linea-decorativa::before,
+  .linea-decorativa::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+  }
+
+  .linea-decorativa span {
+    color: var(--dorado);
+    font-size: 1.2rem;
+  }
+
+  .barra-progreso-container {
+    background: var(--gris-medio);
+    border-radius: 10px;
+    height: 8px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .barra-progreso {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rojo), var(--dorado));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  .info-quiz {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #888;
+  }
+
+  .numero-pregunta {
+    color: var(--dorado);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+  }
+
+  .tarjeta-pregunta {
+    background: var(--gris);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+    animation: aparecerTarjeta 0.4s ease;
+  }
+
+  @keyframes aparecerTarjeta {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tarjeta-pregunta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--rojo), var(--dorado), var(--rojo));
+  }
+
+  .texto-pregunta {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--blanco);
+    font-weight: 600;
+  }
+
+  .opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .opcion {
+    background: var(--gris-medio);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    color: var(--blanco);
+    text-align: left;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .opcion:hover:not(:disabled) {
+    background: rgba(201,168,76,0.12);
+    border-color: var(--dorado);
+    transform: translateX(5px);
+  }
+
+  .opcion .letra {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--dorado);
+    font-size: 0.9rem;
+    min-width: 24px;
+  }
+
+  .opcion.correcta {
+    background: rgba(39,174,96,0.2);
+    border-color: #27ae60;
+    color: #a8e6c0;
+  }
+
+  .opcion.incorrecta {
+    background: rgba(192,57,43,0.2);
+    border-color: var(--rojo-claro);
+    color: #f0a0a0;
+  }
+
+  .opcion.correcta-mostrada {
+    background: rgba(39,174,96,0.15);
+    border-color: #27ae60;
+  }
+
+  .opcion:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 20px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+    animation: aparecerFeedback 0.3s ease;
+    display: none;
+  }
+
+  @keyframes aparecerFeedback {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback.correcto {
+    background: rgba(39,174,96,0.15);
+    border: 1px solid #27ae60;
+    color: #a8e6c0;
+    display: block;
+  }
+
+  .feedback.incorrecto {
+    background: rgba(192,57,43,0.15);
+    border: 1px solid var(--rojo-claro);
+    color: #f0a0a0;
+    display: block;
+  }
+
+  .btn-siguiente {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--rojo), #5a0e0e);
+    border: 1px solid var(--dorado);
+    border-radius: 10px;
+    color: var(--dorado);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    display: none;
+  }
+
+  .btn-siguiente:hover {
+    background: linear-gradient(135deg, #a01e1e, var(--rojo));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(139,26,26,0.4);
+  }
+
+  .pantalla-resultado {
+    text-align: center;
+    padding: 40px 20px;
+    animation: aparecerTarjeta 0.5s ease;
+    display: none;
+  }
+
+  .emoji-resultado {
+    font-size: 5rem;
+    display: block;
+    margin-bottom: 20px;
+    animation: flotar 2s ease-in-out infinite;
+  }
+
+  .titulo-resultado {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--dorado);
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(201,168,76,0.4);
+  }
+
+  .puntaje {
+    font-size: 4rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    color: var(--dorado);
+    text-shadow: 0 0 30px rgba(201,168,76,0.6);
+    margin: 20px 0;
+  }
+
+  .mensaje-resultado {
+    font-size: 1.1rem;
+    color: #aaa;
+    font-style: italic;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+
+  .btn-reiniciar {
+    padding: 15px 40px;
+    background: transparent;
+    border: 2px solid var(--dorado);
+    border-radius: 10px;
+    color: var(--dorado);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-reiniciar:hover {
+    background: rgba(201,168,76,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(201,168,76,0.2);
+  }
+
+  .estrellas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 2rem;
+    margin: 15px 0;
+  }
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+  <div class="cabecera">
+    <h1>Quiz: Los Gagones<br>Guardianes del Matrimonio</h1>
+    <p>¿Cuánto sabes de la leyenda de San Jacinto?</p>
+  </div>
+
+  <div class="linea-decorativa"><span>✦</span></div>
+
+  <div id="zona-quiz">
+    <div class="info-quiz">
+      <span class="numero-pregunta" id="num-pregunta">Pregunta 1 de 8</span>
+      <span id="puntaje-actual">Puntos: 0</span>
+    </div>
+    <div class="barra-progreso-container">
+      <div class="barra-progreso" id="barra" style="width:0%"></div>
+    </div>
+
+    <div class="tarjeta-pregunta" id="tarjeta">
+      <p class="texto-pregunta" id="texto-pregunta"></p>
+    </div>
+
+    <div class="opciones" id="opciones"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-siguiente" id="btn-siguiente" onclick="siguientePregunta()">SIGUIENTE ›</button>
+  </div>
+
+  <div class="pantalla-resultado" id="resultado">
+    <span class="emoji-resultado" id="emoji-res">🐈‍⬛</span>
+    <h2 class="titulo-resultado" id="titulo-res"></h2>
+    <div class="estrellas" id="estrellas"></div>
+    <div class="puntaje" id="puntaje-final"></div>
+    <p class="mensaje-resultado" id="mensaje-res"></p>
+    <button class="btn-reiniciar" onclick="reiniciar()">⟳ JUGAR DE NUEVO</button>
+  </div>
+
+</div>
+
+<script>
+const preguntas = [
+  {
+    texto: "¿En qué lugar ocurre la leyenda de los Gagones?",
+    opciones: ["En la ciudad de Piñas", "En la parroquia San Jacinto", "En la ciudad de Loja", "En el sitio Las Bateas"],
+    correcta: 1,
+    explicacion: "La leyenda ocurre en San Jacinto, una parroquia antigua del cantón Piñas, provincia de El Oro."
+  },
+  {
+    texto: "¿A quiénes atacaban los Gagones según la leyenda?",
+    opciones: ["A los niños que no obedecían", "A los viajeros nocturnos", "A las parejas que vivían juntas sin casarse por la iglesia", "A los ladrones del pueblo"],
+    correcta: 2,
+    explicacion: "Los Gagones aparecían para castigar a quienes formaban un hogar sin recibir el sacramento del matrimonio."
+  },
+  {
+    texto: "¿A qué animales se parecían los Gagones?",
+    opciones: ["A los perros", "A los gatos", "A los murciélagos", "A los búhos"],
+    correcta: 1,
+    explicacion: "Se decía que los Gagones eran parecidos a los gatos y salían de noche, justo después del toque de campanas de las nueve."
+  },
+  {
+    texto: "¿Cómo atacaban los Gagones a sus víctimas?",
+    opciones: ["Las mordían en el cuello", "Las asustaban hasta desmayarlas", "Se pegaban a las rodillas y les arrancaban la rótula", "Las perseguían por los cafetales"],
+    correcta: 2,
+    explicacion: "Su ataque era silencioso pero devastador: se pegaban a las rodillas con fuerza sobrenatural y les arrancaban la rótula."
+  },
+  {
+    texto: "¿Cómo se llamaba el joven protagonista de la historia?",
+    opciones: ["Miguel", "Josué", "Santiago", "Andrés"],
+    correcta: 1,
+    explicacion: "Josué era el joven de San Jacinto que decidió mudarse con su pareja Alisson sin casarse por la iglesia."
+  },
+  {
+    texto: "¿Dónde alquilaron su casita Josué y Alisson?",
+    opciones: ["En el centro del pueblo", "Junto a la iglesia", "En las afueras, en el sitio 'Las Antenas'", "En los cafetales de San Jacinto"],
+    correcta: 2,
+    explicacion: "Josué y Alisson alquilaron una pequeña casita en las afueras del pueblo, en el sitio conocido como 'Las Antenas'."
+  },
+  {
+    texto: "¿Qué encontraron los vecinos al día siguiente del ataque de los Gagones?",
+    opciones: ["La casa destruida y vacía", "A Josué y Alisson pálidos y sin poder caminar", "Solo huellas de garras en el suelo", "Las puertas abiertas y nada más"],
+    correcta: 1,
+    explicacion: "Al día siguiente los vecinos encontraron a Josué y Alisson pálidos y sin poder caminar, tras el ataque de los Gagones."
+  },
+  {
+    texto: "¿Cuál es la moraleja de la leyenda de los Gagones?",
+    opciones: [
+      "Nunca salir de noche en el campo",
+      "El amor florece con respeto, compromiso y fe, honrando las promesas ante Dios",
+      "Los animales nocturnos son peligrosos",
+      "No alquilar casas en las afueras del pueblo"
+    ],
+    correcta: 1,
+    explicacion: "La moraleja dice que el amor necesita raíces profundas: solo florece cuando se cultiva con respeto, compromiso y fe."
+  }
+];
+
+let preguntaActual = 0;
+let puntaje = 0;
+let respondida = false;
+
+function mostrarPregunta() {
+  const p = preguntas[preguntaActual];
+  document.getElementById('num-pregunta').textContent = `Pregunta ${preguntaActual + 1} de ${preguntas.length}`;
+  document.getElementById('puntaje-actual').textContent = `Puntos: ${puntaje}`;
+  document.getElementById('barra').style.width = `${(preguntaActual / preguntas.length) * 100}%`;
+  document.getElementById('texto-pregunta').textContent = p.texto;
+
+  const letras = ['A', 'B', 'C', 'D'];
+  const contenedor = document.getElementById('opciones');
+  contenedor.innerHTML = '';
+
+  p.opciones.forEach((op, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opcion';
+    btn.innerHTML = `<span class="letra">${letras[i]}</span>${op}`;
+    btn.onclick = () => responder(i);
+    contenedor.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('btn-siguiente').style.display = 'none';
+  respondida = false;
+
+  // Reanimar tarjeta
+  const tarjeta = document.getElementById('tarjeta');
+  tarjeta.style.animation = 'none';
+  tarjeta.offsetHeight;
+  tarjeta.style.animation = 'aparecerTarjeta 0.4s ease';
+}
+
+function responder(indice) {
+  if (respondida) return;
+  respondida = true;
+
+  const p = preguntas[preguntaActual];
+  const botones = document.querySelectorAll('.opcion');
+
+  botones.forEach(b => b.disabled = true);
+  botones[p.correcta].classList.add('correcta-mostrada');
+
+  const feedback = document.getElementById('feedback');
+
+  if (indice === p.correcta) {
+    puntaje++;
+    botones[indice].classList.add('correcta');
+    feedback.className = 'feedback correcto';
+    feedback.textContent = '✓ ¡Correcto! ' + p.explicacion;
+  } else {
+    botones[indice].classList.add('incorrecta');
+    feedback.className = 'feedback incorrecto';
+    feedback.textContent = '✗ Incorrecto. ' + p.explicacion;
+  }
+
+  document.getElementById('puntaje-actual').textContent = `Puntos: ${puntaje}`;
+  document.getElementById('btn-siguiente').style.display = 'block';
+
+  if (preguntaActual === preguntas.length - 1) {
+    document.getElementById('btn-siguiente').textContent = 'VER RESULTADO ›';
+  }
+}
+
+function siguientePregunta() {
+  preguntaActual++;
+  if (preguntaActual < preguntas.length) {
+    mostrarPregunta();
+  } else {
+    mostrarResultado();
+  }
+}
+
+function mostrarResultado() {
+  document.getElementById('zona-quiz').style.display = 'none';
+  const res = document.getElementById('resultado');
+  res.style.display = 'block';
+
+  const porcentaje = (puntaje / preguntas.length) * 100;
+  let emoji, titulo, mensaje, estrellas;
+
+  if (porcentaje === 100) {
+    emoji = '🏆'; titulo = '¡Maestro de la Leyenda!';
+    mensaje = 'Conoces perfectamente la historia de los Gagones de San Jacinto. ¡Los espíritus del matrimonio te respetan!';
+    estrellas = '⭐⭐⭐';
+  } else if (porcentaje >= 75) {
+    emoji = '🌙'; titulo = '¡Muy Bien!';
+    mensaje = 'Tienes un buen conocimiento de la leyenda. Los Gagones andan cerca pero no te encuentran...';
+    estrellas = '⭐⭐';
+  } else if (porcentaje >= 50) {
+    emoji = '🐈‍⬛'; titulo = 'Puedes Mejorar';
+    mensaje = 'Conoces algo de la leyenda, pero los Gagones podrían visitarte esta noche. ¡Repasa la historia!';
+    estrellas = '⭐';
+  } else {
+    emoji = '👻'; titulo = '¡Cuidado!';
+    mensaje = 'Los Gagones ya saben dónde vives. Te recomendamos leer bien la leyenda antes de intentarlo de nuevo...';
+    estrellas = '';
+  }
+
+  document.getElementById('emoji-res').textContent = emoji;
+  document.getElementById('titulo-res').textContent = titulo;
+  document.getElementById('estrellas').textContent = estrellas;
+  document.getElementById('puntaje-final').textContent = `${puntaje} / ${preguntas.length}`;
+  document.getElementById('mensaje-res').textContent = mensaje;
+}
+
+function reiniciar() {
+  preguntaActual = 0;
+  puntaje = 0;
+  document.getElementById('resultado').style.display = 'none';
+  document.getElementById('zona-quiz').style.display = 'block';
+  mostrarPregunta();
+}
+
+mostrarPregunta();
+</script>
+</body>
+</html>

@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#7fda18" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Pagina web prácticas de vinculación - Vanessa Escarleth Herrera García - Andrea Indira Mañay Vega</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- Encabezado con logos -->
+  <header class="header-info">
+    <div class="contenedor-logos">
+      <div class="bloque-izquierdo-agrupado">
+        <img src="img/LOGO.png" alt="Logo Universidad Nacional de Loja" class="logo-izquierdo" />
+        <div class="texto-unl">Universidad<br>Nacional<br>de Loja</div>
+      </div>
+      <div class="texto-informatica">
+        <h1>CUENTOS DE<br>NUESTRA COMUNIDAD</h1>
+        <h2>PEDAGOGIA DE LAS CIENCIAS<br>EXPERIMENTALES INFORMÁTICA</h2>
+      </div>
+      <div class="bloque-derecho-agrupado">
+        <div class="texto-colegio">Unidad Educativa <br>Particular Nuevo <br> Ecuador</div>
+        <img src="img/LOGO1.png" alt="Escudo Unidad Educativa 8 de noviembre" class="logo-derecho" />
+      </div>
+    </div>
+  </header>
+
+  <!-- Menú de navegación -->
+  <nav class="menu">
+    <a href="#inicio"><i class="fas fa-landmark"></i> INICIO -CALDERÓN</a>
+    <a href="#unidad-educativa"><i class="fas fa-graduation-cap"></i> UNIDAD EDUCATIVA</a>
+    <a href="#biblioteca"><i class="fas fa-bookmark"></i> BIBLIOTECA DE CUENTOS</a>
+    <a href="#juegos"><i class="fas fa-chess-knight"></i>¡JUEGOS!</a>
+  </nav>
+
+  <!-- Contenedor de Secciones -->
+  <div class="content-sections">
+
+    <!-- ==================== SECCIÓN INICIO ==================== -->
+    <section id="inicio" class="seccion">
+      <div id="contenido-inicio" style="display:block;">
+        <div class="primeraparte">
+          <h1>BIENVENIDOS A LA PARROQUIA CALDERÓN - QUITO</h1>
+        </div>
+        <p>Es un placer contar con tu visita. Este espacio ha sido creado con el objetivo de compartir la riqueza cultural, histórica y social de Calderón, una parroquia rural del Ecuador, ubicada en el cantón Quito, dentro de la provincia de Pichincha. Aquí encontrarás información valiosa, tradiciones ancestrales, y recursos educativos que reflejan el espíritu comunitario.</p>
+        <br>
+
+        <div class="bloque">
+          <div class="texto">
+            <h1>UBICACIÓN</h1>
+            <p>Calderón es una parroquia rural ubicada al noreste del Distrito Metropolitano de Quito, a unos 15 kilómetros del centro de la ciudad. Se encuentra en la zona árida de la meseta de Guangüiltagua, sobre el valle de Guayllabamba, y en las cercanías del nuevo Aeropuerto Internacional Mariscal Sucre. Su altitud es de aproximadamente 2,696 metros sobre el nivel del mar, lo que le confiere un clima seco y templado.<br><br>En cuanto a su historia, Calderón tiene raíces que se remontan a tiempos precolombinos. Fue habitada por pueblos indígenas pertenecientes a la cultura de los Quitus, quienes se asentaron en esta región por su estratégica ubicación geográfica. Durante la época colonial, Calderón comenzó a consolidarse como un pequeño poblado agrícola, siendo parte de las haciendas que rodeaban la ciudad.</p>
+          </div>
+          <img src="img/UBI1.jpg" alt="ubicacion" class="imagen-principal" style="object-position: center top;">
+        </div>
+
+        <div class="bloque">
+          <img src="img/SIM.jpg" alt="Simbología" class="imagen-principal" style="object-fit: contain; background: #fff; max-height: 350px; align-self: center;">
+          <div class="texto">
+            <h1>SIMBOLOGIA</h1>
+            <p>Los símbolos de la parroquia Calderón, ubicada en Quito, Ecuador, son principalmente las figuras de mazapán y la iglesia de San José. Las figuras de mazapán son una artesanía tradicional que se elabora con harina de trigo y agua, y se decoran con diversos motivos. La iglesia de San José, con su arquitectura distintiva y torres de ladrillo, es un hito importante en la parroquia y alberga las imágenes de San José y la Virgen de la Natividad, patronos de Calderón.</p>
+          </div>
+        </div>
+
+        <!-- PARALLAX FONDO -->
+        <div style="position:relative; height:400px; overflow:hidden; width:100%;">
+          <div id="parallax-fondo" style="background-image: url('img/FONDO.webp'); background-position: center; background-repeat: no-repeat; background-size: cover; position:absolute; top:-80px; left:0; right:0; height:calc(100% + 160px); will-change: transform;"></div>
+        </div>
+        <script>
+          var pfondo = document.getElementById('parallax-fondo');
+          window.addEventListener('scroll', function() {
+            var rect = pfondo.parentElement.getBoundingClientRect();
+            var offset = rect.top * 0.9;
+            pfondo.style.transform = 'translateY(' + offset + 'px)';
+          }, { passive: true });
+        </script>
+        <br>
+
+        <div class="bloque">
+          <img src="img/hino.jpeg" alt="Simbología" class="imagen-principal" style="object-fit: contain; background: #fff; align-self: center;">
+          <div class="texto">
+            <h1>TURISMO</h1>
+            <p>La parroquia Calderón, ubicada a unos 15 km al norte de Quito, es un destino ideal para el turismo cultural y artesanal. Famosa por sus figuras de mazapán, que se elaboran artesanalmente con ingredientes sencillos y motivos tradicionales, es hogar del Centro Artesanal del Mazapán y el Museo del Mazapán, donde los visitantes pueden conocer la técnica, participar en talleres y adquirir piezas únicas.<br><br>Más allá del arte comestible, Calderón ofrece atractivos naturales e históricos como la Ruta Viva San Juan, Artesón, Catequilla, un sendero que lleva al sitio arqueológico del cerro Catequilla, ubicado en la línea ecuatorial y utilizado como observatorio ancestral por la cultura Quitu‑Cara. Desde el Mirador de La Capilla y el mirador del cementerio de Collas, los visitantes pueden contemplar una vista panorámica de áreas como Tababela, Cajambe, Pululahua, Ilaló y el aeropuerto de Quito.</p>
+          </div>
+        </div>
+
+        <div class="bloque" style="overflow:visible; align-items:center;">
+          <div style="position:relative; overflow:hidden; height:380px; clip-path:none;">
+            <div id="sliderTrack" style="display:flex; height:380px; transition:transform 0.5s ease;">
+              <img src="img/1.jpeg" style="min-width:100%; height:380px; object-fit:cover; flex-shrink:0;">
+              <img src="img/2.jpeg" style="min-width:100%; height:380px; object-fit:cover; flex-shrink:0;">
+              <img src="img/3.jpeg" style="min-width:100%; height:380px; object-fit:cover; flex-shrink:0;">
+              <img src="img/4.jpeg" style="min-width:100%; height:380px; object-fit:cover; flex-shrink:0;">
+              <img src="img/5.jpeg" style="min-width:100%; height:380px; object-fit:cover; flex-shrink:0;">
+            </div>
+            <button onclick="moverSlider(-1)" style="position:absolute;top:50%;left:8px;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;padding:10px 14px;font-size:18px;cursor:pointer;border-radius:4px;z-index:10;">&#10094;</button>
+            <button onclick="moverSlider(1)" style="position:absolute;top:50%;right:8px;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;padding:10px 14px;font-size:18px;cursor:pointer;border-radius:4px;z-index:10;">&#10095;</button>
+            <div style="position:absolute;bottom:10px;width:100%;text-align:center;">
+              <span id="dot0" onclick="irASlide(0)" style="display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;cursor:pointer;background:#fff;"></span>
+              <span id="dot1" onclick="irASlide(1)" style="display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.5);"></span>
+              <span id="dot2" onclick="irASlide(2)" style="display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.5);"></span>
+              <span id="dot3" onclick="irASlide(3)" style="display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.5);"></span>
+              <span id="dot4" onclick="irASlide(4)" style="display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.5);"></span>
+            </div>
+          </div>
+          <div class="texto">
+            <h1>FIESTAS Y TRADICIONES</h1>
+            <p>🔴Parroquialización:<br>Del 28 de julio al 12 de agosto: Inicia con el pregón de fiestas, eventos artísticos, culturales y deportivos, concurso de gallos, feria de mazapán, comidas típicas, desfile, toros y bailes populares.<br><br>🟠Día de Difuntos:<br>2 de noviembre: Esta conmemoración inicia con una misa campal y continúa con una charla sobre los signos y símbolos culturales de la fecha. Luego las familias comparten entre sí y ofrecen alimentos al difunto alrededor de su tumba. Los más tradicionales son las guaguas de pan, la colada morada y la uchucuta.<br><br>🟢Fiesta de la Virgen de la Inmaculada:<br>8 de diciembre: En esta celebración se organizan actividades relacionadas con el teatro, la danza y un festival de comidas típicas.</p>
+          </div>
+        </div>
+
+        <script>
+          var slideActual = 0;
+          var totalSlides = 5;
+          function moverSlider(dir) { slideActual = (slideActual + dir + totalSlides) % totalSlides; actualizarSlider(); }
+          function irASlide(i) { slideActual = i; actualizarSlider(); }
+          function actualizarSlider() {
+            document.getElementById('sliderTrack').style.transform = 'translateX(-' + (slideActual * 100) + '%)';
+            for (var i = 0; i < totalSlides; i++) {
+              document.getElementById('dot' + i).style.background = i === slideActual ? '#fff' : 'rgba(255,255,255,0.5)';
+            }
+          }
+        </script>
+
+        <div class="primeraparte">
+          <h1>GOOGLE MAPS - CALDERÓN</h1>
+          <p>"Con este mapa de Calderón, Quito, podrás situarte fácilmente en el territorio y conocer a fondo los canales y puntos de comunicación que conectan a la comunidad."</p>
+        </div>
+        <div style="border-radius:15px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31918.503912457873!2d-78.41979394999998!3d-0.09366495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d58ee44220e075%3A0x3055c08e9b119fa!2sCalder%C3%B3n%2C%20Quito!5e0!3m2!1ses!2sec!4v1781744648339!5m2!1ses!2sec" width="100%" height="350" style="border:0; display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN UNIDAD EDUCATIVA ==================== -->
+    <section id="unidad-educativa" class="seccion">
+      <div class="primeraparte">
+        <h1>BIENVENIDOS A LA UNIDAD EDUCATIVA PARTICULAR NUEVO ECUADOR</h1>
+      </div>
+      <div class="bloque">
+        <img src="img/colegio.jpeg" alt="historia" class="imagen-principal" style="align-self: center; object-fit: contain;">
+        <div class="texto">
+          <h1>HISTORIA</h1>
+          <p>La Unidad Educativa Particular "Nuevo Ecuador", ubicada en la parroquia de Calderón en Quito, es una institución con más de 50 años de trayectoria que inició sus bases en el sector particular el 11 de mayo de 1964 bajo el nombre original de escuela "Virgen de Fátima", fundada por el padre Romualdo de Poli con apenas 93 alumnos.<br><br>Tras una importante evolución comunitaria y cambios de liderazgo parroquial, en mayo de 1972 se autorizó su transformación a un modelo fiscomisional adoptando formalmente el nombre de "Nuevo Ecuador", lo cual se ratificó por decreto oficial en 1973.</p>
+        </div>
+      </div>
+      <div class="bloque">
+        <img src="img/mision.jpeg" alt="mision" class="imagen-principal" />
+        <div class="texto">
+          <h1>MISIÓN</h1>
+          <p>La Unidad Educativa Particular "Nuevo Ecuador" forma estudiantes emprendedores capacitados como seres humanos en todas sus dimensiones: social, emocional, corporal e intelectual, fomentando integralmente los principios, valor y virtudes; privilegiando el nivel espiritual de mente universal, intuición y alma que oriente el comportamiento de la realidad material para una plena autorrealización con profesionales capacitados en el ámbito pedagógico a través de una educación de calidad y calidez.</p>
+        </div>
+      </div>
+      <div class="bloque">
+        <img src="img/vision.jpeg" alt="Visión" class="imagen-principal" />
+        <div class="texto">
+          <h1>VISIÓN</h1>
+          <p>La Patria ecuatoriana con sus hijos emprendedores guiados por principios, valores y virtudes. La educación está en la práctica del bien, en la sensibilización de la creatividad emprendedora, en el amor a nuestra Patria. Por ello vemos la autorrealización material y espiritual de los ecuatorianos como un yo colectivo, alegre y libre, respetuoso de su entorno, con un alto nivel científico y tecnológico e integrado al mundo internacional.</p>
+        </div>
+      </div>
+
+      <style>
+        .inst-card { display:flex; align-items:center; justify-content:space-between; background:rgba(26,58,107,0.08); border-radius:8px; padding:10px 12px; margin-bottom:8px; cursor:default; transition:background 0.3s ease, transform 0.3s ease; }
+        .inst-card:hover { background:rgba(255,255,255,0.15); transform:translateX(6px); }
+        .inst-card span { color:#1a1a1a; font-family:'Space Grotesk',sans-serif; font-size:0.88rem; display:flex; align-items:center; gap:8px; }
+        .inst-col h3 { font-family:'Space Grotesk',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; text-align:left; }
+      </style>
+
+      <div style="background:#ffffff; border-radius:14px; padding:20px; margin-bottom:28px;">
+        <div style="background:#1a3a6b; border-radius:8px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+          <i class="fas fa-building" style="color:#ffffff; font-size:18px;"></i>
+          <span style="color:#ffffff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem;">INSTALACIONES</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
+          <div class="inst-col">
+            <h3 style="color:#000000;"><i class="fas fa-running" style="color:#f5c842;"></i> Deportivas</h3>
+            <div class="inst-card"><span><i class="fas fa-swimming-pool" style="color:#f5c842;"></i> Piscina</span></div>
+            <div class="inst-card"><span><i class="fas fa-futbol" style="color:#f5c842;"></i> Cancha deportiva</span></div>
+            <div class="inst-card"><span><i class="fas fa-table-tennis" style="color:#f5c842;"></i> Ping pong</span></div>
+            <div class="inst-card"><span><i class="fas fa-child" style="color:#f5c842;"></i> Área de juegos</span></div>
+          </div>
+          <div class="inst-col">
+            <h3 style="color:#000000;"><i class="fas fa-paint-brush" style="color:#f5c842;"></i> Talleres Complementarios</h3>
+            <div class="inst-card"><span><i class="fas fa-tshirt" style="color:#f5c842;"></i> Diseño de Modas</span></div>
+            <div class="inst-card"><span><i class="fas fa-utensils" style="color:#f5c842;"></i> Gastronomía</span></div>
+            <div class="inst-card"><span><i class="fas fa-palette" style="color:#f5c842;"></i> Diseño Gráfico</span></div>
+            <div class="inst-card"><span><i class="fas fa-music" style="color:#f5c842;"></i> Canto y Guitarra</span></div>
+          </div>
+          <div class="inst-col">
+            <h3 style="color:#000000;"><i class="fas fa-guitar" style="color:#f5c842;"></i> Arte y Música</h3>
+            <div class="inst-card"><span><i class="fas fa-drum" style="color:#f5c842;"></i> Batería</span></div>
+            <div class="inst-card"><span><i class="fas fa-guitar" style="color:#f5c842;"></i> Bajo</span></div>
+            <div class="inst-card"><span><i class="fas fa-star" style="color:#f5c842;"></i> Bastoneras</span></div>
+            <div class="inst-card"><span><i class="fas fa-cut" style="color:#f5c842;"></i> Costura</span></div>
+          </div>
+          <div class="inst-col">
+            <h3 style="color:#000000;"><i class="fas fa-laptop" style="color:#f5c842;"></i> Tecnología e Infraestructura</h3>
+            <div class="inst-card"><span><i class="fas fa-robot" style="color:#f5c842;"></i> Robótica</span></div>
+            <div class="inst-card"><span><i class="fas fa-language" style="color:#f5c842;"></i> Inglés</span></div>
+            <div class="inst-card"><span><i class="fas fa-desktop" style="color:#f5c842;"></i> Plataforma Idukay</span></div>
+            <div class="inst-card"><span><i class="fab fa-google" style="color:#f5c842;"></i> Google Workspace</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARALLAX IMAGEN -->
+<div id="parallax-container" style="position:relative; height:450px; overflow:hidden; width:100%;">
+  <img 
+    id="parallax-img"
+    src="img/VIDEOFONDO.jpg" 
+    alt="Imagen de fondo" 
+    style="position:absolute; top:0; left:0; width:100%; height:130%; object-fit:cover; z-index:0;"
+  >
+</div>
+
+<script>
+  window.addEventListener('scroll', function() {
+    const container = document.getElementById('parallax-container');
+    const img = document.getElementById('parallax-img');
+    const rect = container.getBoundingClientRect();
+    const offsetY = rect.top * 0.4;
+    img.style.transform = `translateY(${offsetY}px)`;
+  });
+</script>
+
+      <script>
+        var video = document.getElementById('video-parallax');
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) { video.play(); } });
+        window.addEventListener('scroll', function() { if (video.paused) { video.play(); } });
+      </script>
+
+      <div class="bloque">
+        <img src="img/LOGO1.png" alt="Simbología" class="imagen-principal" style="object-fit: contain; background: #fff; max-height: 300px; align-self: center;">
+        <div class="texto">
+          <h1>SIMBOLOGIA</h1>
+          <p>Colores del escudo:<br>🟥 Rojo Vino / Granate: representa la fortaleza, la pasión por la enseñanza, la perseverancia y el arraigo de los valores institucionales.<br><br>🟨 Dorado / Amarillo: representa la excelencia académica, la nobleza del saber, la energía de la juventud y el éxito alcanzado mediante el esfuerzo diario.<br><br>⬜ Blanco: simboliza la pureza de ideales, la transparencia, la paz, la integridad y la honestidad que se inculca a los estudiantes.</p>
+        </div>
+      </div>
+
+      <div class="texto">
+        <h1>OFERTA ACADEMICA</h1><br>
+        <style>
+          @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+          @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+          @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+          @keyframes wiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+          .card-oferta{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1.5rem 1.25rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:border-color 0.2s,transform 0.2s;}
+          .card-oferta:hover{border-color:#aaa;transform:translateY(-4px);}
+          .emoji-anim{font-size:56px;display:block;}
+          .e1{animation:bounce 2s ease-in-out infinite;}
+          .e2{animation:pulse 2s ease-in-out infinite;}
+          .e3{animation:wiggle 2.5s ease-in-out infinite;}
+          .e4{animation:spin 4s linear infinite;}
+          .card-oferta h3{font-size:17px;font-weight:600;color:#1a1a2e;margin:0;}
+          .card-oferta p{font-size:13px;color:#555;margin:0;line-height:1.6;}
+        </style>
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px; padding:1rem 0; max-width:900px; margin:0 auto;">
+          <div class="card-oferta"><span class="emoji-anim e1">🧒</span><h3>Educación Inicial</h3><p>Inicial 1 y 2. Desarrollamos identidad y autonomía en aspectos cognitivos, sociales, afectivos, motrices y comunicativos.</p></div>
+          <div class="card-oferta"><span class="emoji-anim e2">📚</span><h3>Educación General Básica</h3><p>Desde 1ero EGB hasta 10mo EGB. Desarrollamos pensamiento lógico, crítico y creativo.</p></div>
+          <div class="card-oferta"><span class="emoji-anim e3">🎓</span><h3>Bachillerato General Unificado</h3><p>Desde 1ero BGU hasta 3ero BGU. Desarrollamos competencias transversales enfocadas en el aprendizaje autónomo y comunicación efectiva.</p></div>
+          <div class="card-oferta"><span class="emoji-anim e4">⚙️</span><h3>Talleres Complementarios</h3><p>Actividades complementarias en: Diseño de Modas, Gastronomía, Diseño Gráfico, Natación, Artística, Estética, Club de Canto y Guitarra.</p></div>
+        </div>
+      </div>
+      <br>
+
+      <div class="primeraparte">
+        <h1>Mapa - Google Maps</h1>
+        <p>Te presentamos el mapa de la Unidad Educativa Particular Nuevo Ecuador.</p>
+      </div>
+      <div style="border-radius:15px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255348.00851029146!2d-78.44965429999999!3d-0.09674239999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d58f139e3c38a5%3A0x995d84f1a550f490!2sUnidad%20Educativa%20Nuevo%20Ecuador!5e0!3m2!1ses!2sec!4v1781747911119!5m2!1ses!2sec" width="100%" height="350" style="border:0; display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN BIBLIOTECA ==================== -->
+    <section id="biblioteca" class="seccion">
+
+      <div class="primeraparte">
+        <h1>Biblioteca de Cuentos, Leyendas, saberes y tradiciones</h1>
+        <p>Explora los cuentos y selecciona desde el principal de la comunidad de Calderón hasta diferentes cuentos de todo el Ecuador:</p>
+      </div>
+
+      <div class="biblioteca-layout">
+
+        <div class="fila-cuentos" style="grid-template-columns:1fr 1fr; max-width:100%; margin:0 auto;">
+          <div class="tarjeta-cuento">
+            <div class="tarjeta-info" style="text-align:center; align-items:center;">
+              <h2>Cuento 1: La Leyenda de SAMKA CANCHA</h2>
+              <p>"Hay lugares que la tierra prefiere olvidar... pero que la memoria de la sangre se niega a borrar."</p>
+              <img src="img/mini1.png" alt="Miniatura del cuento 1" class="miniatura-cuento" style="object-fit:contain; height:auto; aspect-ratio:unset;">
+              <a href="#cuento-principal" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+          <div class="tarjeta-cuento">
+            <div class="tarjeta-info" style="text-align:center; align-items:center;">
+              <h2>Cuento 2: La Leyenda del Maiz Encantado de Calderón</h2>
+              <p>"Una cosecha bañada por la magia, un secreto dorado que la tierra no pudo ocultar."</p>
+              <img src="img/mini11.png" alt="Miniatura del cuento 2" class="miniatura-cuento" style="object-fit:contain; height:auto; aspect-ratio:unset;">
+              <a href="#cuento1" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- BANDERA INTERACTIVA -->
+        <div style="max-width:540px; margin:0 auto 28px;">
+          <p style="text-align:center; font-weight:700; color:#8B0000; font-size:1rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;">
+            Selecciona una región del Ecuador que quieras descubrir:
+          </p>
+          <style>
+            .franja { flex:1; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:flex 0.4s cubic-bezier(.22,.88,.36,1), filter 0.3s; position:relative; overflow:hidden; }
+            .franja:hover { flex:2.2; filter:brightness(1.08); }
+            .franja-label { opacity:0; transform:translateY(12px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(.22,.88,.36,1); text-align:center; padding:10px 18px; pointer-events:none; border-radius:8px; }
+            .franja:hover .franja-label { opacity:1; transform:translateY(0) scale(1); }
+            .bandera-wrap:hover .escudo-img { opacity:0.15; }
+          </style>
+          <div class="bandera-wrap" style="position:relative; width:100%; height:220px; border-radius:10px; overflow:hidden; border:3px solid #C8A020; display:flex; flex-direction:column;">
+            <div class="franja" style="background:#FFD100;" onclick="abrirRegion('costa')">
+              <div class="franja-label" style="background:rgba(130,90,0,0.88);">
+                <div style="font-size:24px; margin-bottom:4px;"></div>
+                <div style="color:#fff; font-weight:700; font-size:15px;">REGIÓN COSTA</div>
+                <div style="color:#ffe082; font-size:12px; margin-top:3px;">Clic para explorar cuentos</div>
+              </div>
+            </div>
+            <div class="franja" style="background:#003893;" onclick="abrirRegion('sierra')">
+              <div class="franja-label" style="background:rgba(0,20,80,0.88);">
+                <div style="font-size:24px; margin-bottom:4px;"></div>
+                <div style="color:#fff; font-weight:700; font-size:15px;">REGIÓN SIERRA</div>
+                <div style="color:#90caf9; font-size:12px; margin-top:3px;">Clic para explorar cuentos</div>
+              </div>
+            </div>
+            <div class="franja" style="background:#CE1126;" onclick="abrirRegion('oriente')">
+              <div class="franja-label" style="background:rgba(100,0,10,0.88);">
+                <div style="font-size:24px; margin-bottom:4px;"></div>
+                <div style="color:#fff; font-weight:700; font-size:15px;">REGIÓN ORIENTE</div>
+                <div style="color:#ffcdd2; font-size:12px; margin-top:3px;">Clic para explorar cuentos</div>
+              </div>
+            </div>
+            <img src="img/escudo.png" class="escudo-img" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:90px;height:90px;pointer-events:none;transition:opacity 0.3s;z-index:10;object-fit:contain;">
+          </div>
+          <p id="hint-bandera" style="text-align:center; font-size:12px; color:#888; margin-top:8px;">Pasa el mouse sobre cada franja y haz clic para ingresar</p>
+        </div>
+
+      </div><!-- fin biblioteca-layout -->
+
+      <!-- ===== SECCIÓN REGIÓN COSTA ===== -->
+      <div id="seccion-region-costa" style="display:none;">
+        <button class="btn-volver" onclick="volverBiblioteca()"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</button>
+        <div style="background:linear-gradient(135deg,#f5c842,#e8a000); border-radius:12px; padding:14px 20px; margin:20px 0 18px; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span style="font-size:1.5rem;"></span>
+          <span style="color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem;">Cuentos de la Región Costa</span>
+        </div>
+        <div class="fila-cuentos" style="grid-template-columns:1fr; max-width:800px; margin:0 auto;">
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 3: Leyenda los Gagones</h2>
+              <p>"Un llanto de cachorro que eriza la piel... No camines a oscuras con secretos en el alma, porque los Gagones te están vigilando."</p>
+              <img src="img/mini2.png" alt="Miniatura del cuento 3" class="miniatura-cuento">
+              <a href="#cuento2" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 4: La Niña del Cacao</h2>
+              <p>"Adéntrate en los antiguos campos para descubrir la melancólica historia de La Niña del Cacao. Un relato que el tiempo no pudo borrar."</p>
+              <img src="img/cuento4.png" alt="Miniatura del cuento 4" class="miniatura-cuento">
+              <a href="#cuento3" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECCIÓN REGIÓN SIERRA ===== -->
+      <div id="seccion-region-sierra" style="display:none;">
+        <button class="btn-volver" onclick="volverBiblioteca()"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</button>
+        <div style="background:linear-gradient(135deg,#564cdd,#6173db); border-radius:12px; padding:14px 20px; margin:20px 0 18px; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span style="font-size:1.5rem;"></span>
+          <span style="color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem;">Cuentos de la Región Sierra</span>
+        </div>
+        <div class="fila-cuentos" style="grid-template-columns:1fr; max-width:800px; margin:0 auto;">
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 5: El Caballero y las Espuelas de Oro</h2>
+              <p>"El brillo de la codicia resuena en la oscuridad... Escucha el tintineo de la medianoche y descubre la leyenda de El Caballero y las Espuelas de Oro."</p>
+              <img src="img/cuento5.png" alt="Miniatura del cuento 5" class="miniatura-cuento">
+              <a href="#cuento4" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 6: El puente del Diablo</h2>
+              <p>"Un pacto de sangre tallado en piedra antes del amanecer... ¿Te atreverías a cruzar El Puente del Diablo?"</p>
+              <img src="img/cuento6.png" alt="Miniatura del cuento 6" class="miniatura-cuento">
+              <a href="#cuento5" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECCIÓN REGIÓN ORIENTE ===== -->
+      <div id="seccion-region-oriente" style="display:none;">
+        <button class="btn-volver" onclick="volverBiblioteca()"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</button>
+        <div style="background:linear-gradient(135deg,#ee2c2c,#d12e52); border-radius:12px; padding:14px 20px; margin:20px 0 18px; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span style="font-size:1.5rem;"></span>
+          <span style="color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem;">Cuentos de la Región Oriente</span>
+        </div>
+        <div class="fila-cuentos" style="grid-template-columns:1fr; max-width:800px; margin:0 auto;">
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 7: ETSA</h2>
+              <p>"Un joven guerrero, un demonio insaciable y el día en que la selva amazónica se quedó sin cantos. Descubre la leyenda épica de ETSA."</p>
+              <img src="img/mini4.png" alt="Miniatura del cuento 7" class="miniatura-cuento">
+              <a href="#cuento6" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+          <div class="tarjeta-cuento tarjeta-secundaria">
+            <div class="tarjeta-info">
+              <h2>Cuento 8: La Fiesta del Chonta</h2>
+              <p>"Cuando la selva madura, los ancestros bajan a bailar... Déjate envolver por el ritual sagrado de La Fiesta de la Chonta."</p>
+              <img src="img/cuento8.png" alt="Miniatura del cuento 8" class="miniatura-cuento">
+              <a href="#cuento7" class="btn-cuento">Ver cuento</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function abrirRegion(region) {
+          document.querySelector('#biblioteca .primeraparte').style.display = 'none';
+          document.querySelector('#biblioteca .biblioteca-layout').style.display = 'none';
+          ['costa','sierra','oriente'].forEach(function(r) {
+            document.getElementById('seccion-region-' + r).style.display = 'none';
+          });
+          document.getElementById('seccion-region-' + region).style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function volverBiblioteca() {
+          ['costa','sierra','oriente'].forEach(function(r) {
+            document.getElementById('seccion-region-' + r).style.display = 'none';
+          });
+          document.querySelector('#biblioteca .primeraparte').style.display = 'block';
+          document.querySelector('#biblioteca .biblioteca-layout').style.display = 'block';
+          window.scrollTo({ top: document.getElementById('biblioteca').offsetTop, behavior: 'smooth' });
+        }
+      </script>
+
+    </section>
+
+
+
+
+
+    <!-- ==================== CUENTO PRINCIPAL ==================== -->
+    <section id="cuento-principal" class="seccion">
+      
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      
+      <div class="primeraparte">
+        
+        <h1>Cuento 1: La Leyenda de SAMKA CANCHA</h1>
+        
+        <p>La organización de la leyenda se dividirá en varios apartados fundamentales para la mejor comprensión de la misma:</p>
+      </div>
+      <div class="bloque">
+        <video class="imagen-principal" controls playsinline style="max-height:350px; object-fit:contain;">
+          <source src="img/video1.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>¿Estás listo para adentrarte en lo desconocido? Siente la tensión y el misterio en alta definición con el video de La Leyenda de SAMKA CANCHA. A través de una edición dinámica, una iluminación que juega con tus miedos y una atmósfera sonora que te pondrá la piel de gallina, viajarás directo al epicentro de este mito ancestral. No dejes que la oscuridad te lo gane: dale play y descúbrelo ahora mismo.</p>
+        </div>
+    
+      </div>
+
+
+      <div class="bloque">
+        <div class="imagen-principal">
+          <iframe src="https://heyzine.com/flip-book/928ff21ff4.html" class="calameo-visor" allowfullscreen></iframe>
+        </div>
+        <div class="texto">
+          <h1>Libro Digital</h1>
+          <p>Una lectura intensa que no te dejará dormir. Si lo tuyo es devorar historias página a página y construir el misterio en tu propia mente, el libro digital de La Leyenda de SAMKA CANCHA está esperando por ti. Con capítulos cortos y un suspenso adictivo ideal para leer en tu teléfono, tablet o Kindle, este ebook te sumergirá en un relato del que no querrás escapar. ¡Descárgalo ya y empieza la aventura!</p>
+        </div>
+      </div>
+
+
+<div class="bloque" style="align-items: center;">
+  <div class="imagen-principal" style="display: flex; align-items: center; justify-content: center;">
+    <audio controls style="width:100%; border-radius:12px;">
+      <source src="img/video1.mp3" type="audio/mpeg">
+      Tu navegador no soporta el audio.
+    </audio>
+  </div>
+  <div class="texto">
+    <h1>Audio Cuento</h1>
+    <p>¡Prepárate para agudizar tus sentidos! Sube el volumen y deja que la oscuridad te envuelva con el Audio Cuento de La Leyenda de SAMKA CANCHA. Diseñado especialmente para quienes prefieren cerrar los ojos y dejarse llevar, esta experiencia sonora te sumergirá en el mito a través de una voz en off hipnótica y susurrante, combinada con efectos de sonido envolventes que recrean cada crujido, viento helado y lamento ancestral de la historia. Es la opción perfecta para apagar las luces, ponerte los auriculares y sentir cómo el terror psicológico cobra vida a tu alrededor; dale play y deja que la leyenda te hable directamente al oído.</p>
+  </div>
+</div>
+
+      <div class="bloque">
+                <img src="img/yo.PNG" alt="compañera1" class="imagen-principal" style="max-height:350px; object-fit:contain; background:#f8f8f2;" />
+        <div class="texto">
+          <h1>Estudiante: Vanessa Escarleth Herrera Garcia</h1>
+          <p>La estudiante Vanessa Herrera, quien actualmente cursa la carrera de Pedagogía de las Ciencias Experimentales en Informática. Vanessa se ha destacado por su compromiso académico, su interés en la innovación educativa y su vocación por la enseñanza de las tecnologías de la información.</p>
+        </div>
+      </div>
+
+<div class="bloque">
+  <div style="display:flex; align-items:center; padding:16px;">
+<img src="img/profe.jpeg" alt="Profesora" style="max-height:450px; width:100%; object-fit:contain; background:#f8f8f2;" />
+  </div>
+  <div class="texto">
+    <h1>Profesora: LIC. Carolina Alexandra Vinueza Suárez</h1>
+    <p>La Licenciada Carolina Alexandra Vinueza Suárez se distingue por su alto sentido de compromiso, responsabilidad y vocación de servicio en el ámbito educativo. Su desempeño profesional se caracteriza por la constante búsqueda de estrategias innovadoras que favorecen el aprendizaje significativo, promoviendo en sus estudiantes el desarrollo de conocimientos, habilidades y valores fundamentales para su formación integral.
+Su labor docente está orientada a fomentar un ambiente de aprendizaje inclusivo, participativo y respetuoso, donde cada estudiante tiene la oportunidad de desarrollar sus capacidades y potencialidades. Se destaca por su empatía, sensibilidad humana y capacidad para comprender las necesidades individuales de sus alumnos, brindándoles acompañamiento permanente.
+<br><br>
+Asimismo, demuestra una notable dedicación en la planificación y ejecución de actividades pedagógicas que estimulan el pensamiento crítico, la creatividad y el trabajo colaborativo. Su actitud positiva, liderazgo y capacidad de motivación contribuyen al fortalecimiento de la autoestima y la confianza de los estudiantes, generando espacios de convivencia armónica y aprendizaje efectivo.
+Gracias a su profesionalismo, ética, perseverancia y entrega constante, la Licenciada Carolina Alexandra Vinueza Suárez se ha consolidado como una docente ejemplar, apreciada por estudiantes, familias y colegas. Su valiosa contribución al desarrollo educativo la convierte en un referente positivo dentro de la comunidad educativa, destacándose por su compromiso con la excelencia académica y la formación de ciudadanos responsables, solidarios y comprometidos con la sociedad.</p>
+  </div>
+</div>
+    </section>
+
+
+
+
+
+    <!-- ==================== CUENTO 2 ==================== -->
+    <section id="cuento1" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 2: La Leyenda del Maiz Encantado de Calderón</h1>
+        <p>La organización de la leyenda se dividirá en varios apartados fundamentales para la mejor comprensión de la misma:</p>
+      </div>
+      <div class="bloque">
+         <video class="imagen-principal" controls playsinline style="max-height:350px; object-fit:contain;">
+          <source src="img/leyendaprincipal2.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>¡Deja que la magia de nuestra tierra cobre vida ante tus ojos! Te invitamos a dar un viaje visual inolvidable con el video de La Leyenda del Maíz Encantado de Calderón. Déjate atrapar por sus colores vibrantes, una atmósfera mística y una banda sonora que te transportará directo a las raíces de nuestra tradición. No esperes más, dale play y descubre el milagro oculto en el corazón del sembrío.</p>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <div class="imagen-principal">
+          <iframe src="https://heyzine.com/flip-book/5acd0f0890.html" class="calameo-visor" allowfullscreen></iframe>
+        </div>
+        <div class="texto">
+          <h1>Libro Digital</h1>
+          <p>Una joya del folclor ancestral lista para ser descubierta en tu pantalla. Si eres de los que disfruta perderse en la lectura y saborear cada palabra, el libro digital de La Leyenda del Maíz Encantado de Calderón es para ti. Con una narrativa ágil y descripciones tan vivas que casi podrás sentir el viento del campo, este ebook te atrapará desde la primera página. ¡Descárgalo hoy mismo y comienza a leer!</p>
+        </div>
+      </div>
+
+
+   <div class="bloque" style="align-items: center;">
+  <div class="imagen-principal" style="display: flex; align-items: center; justify-content: center;">
+    <audio controls style="width:100%; border-radius:12px;">
+      <source src="img/video2.mp3" type="audio/mpeg">
+      Tu navegador no soporta el audio.
+    </audio>
+  </div>
+  <div class="texto">
+    <h1>Audio Cuento</h1>
+    <p>¡Prepárate para escuchar el susurro de la tierra! Sube el volumen y deja que la magia te envuelva con el Audio Cuento de La Leyenda del Maíz Encantado de Calderón. Diseñado especialmente para quienes prefieren cerrar los ojos y dejarse llevar, esta experiencia sonora te sumergirá en el mito a través de una voz en off hipnótica, combinada con efectos envolventes que recrean el crujir de las hojas secas, vientos andinos y los ecos de un poder ancestral. Es la opción perfecta para ponerte los auriculares y sentir cómo la leyenda cobra vida a tu alrededor; dale play y deja que la historia te hable directamente al oído.</p>
+  </div>
+</div>
+
+
+      <div class="bloque">
+                <img src="img/yooo.jpeg" alt="compañero2" class="imagen-principal" style="max-height:350px; object-fit:contain; background:#f8f8f2;" />
+        <div class="texto">
+          <h1>Estudiante: Andrea Indira Mañay Vega</h1>
+          <p>La estudiante Andrea Mañay, quien actualmente cursa la carrera de Pedagogía de las Ciencias Experimentales en Informática. Se ha destacado por su compromiso académico, su interés en la innovación educativa y su vocación por la enseñanza.</p>
+        </div>
+      </div>
+      <div class="bloque">
+        <img src="img/profes.jpeg" alt="Profesora" class="imagen-principal" style="max-height:350px; object-fit:contain; background:#f8f8f2;" />
+        <div class="texto">
+          <h1>Profesora: LIC. Gabriela Chavez</h1>
+          <p>La Licenciada Gabriela Chávez se destaca por su excelente organización dentro de la institución y por un trabajo pedagógico sólido y bien estructurado. A lo largo de su trayectoria en la escuela y en el ámbito educativo, ha demostrado gran disposición para colaborar en todas las actividades y ha estado siempre dispuesta a apoyar cuando fue necesario. Su experiencia, compromiso y aportes constantes la convierten en una profesional valiosa y muy apreciada por toda la comunidad educativa.</p>
+      </div>
+    </section>
+
+    <!-- ==================== CUENTO 3 ==================== -->
+    <section id="cuento2" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 3: Leyenda los Gagones</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>¿Crees que nadie te está mirando? Piénsalo dos veces. Apaga las luces y prepárate para un viaje visual escalofriante con La Leyenda de los Gagones. A través de una atmósfera de suspenso, sombras acechantes y un diseño de sonido que te pondrá los pelos de punta, verás cobrar vida a estas criaturas místicas que vigilan los secretos de la noche. Dale play y descubre por qué en los Andes nadie se atreve a desafiar la oscuridad. ¡No mires atrás!</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/cuento3.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+    <!-- ==================== CUENTO 4 ==================== -->
+    <section id="cuento3" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 4: La Niña del Cacao</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>Déjate seducir por el misterio y la magia de nuestra tierra. Te invitamos a vivir una experiencia visual única con el video de La Niña del Cacao. A través de paisajes mágicos, una estética cinematográfica envolvente y una música que te tocará las fibras más sensibles, descubrirás la fantástica historia que dio origen al tesoro más dulce de nuestra cultura. Dale play y viaja a través del tiempo en un abrir y cerrar de ojos.</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/video4.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+    <!-- CUENTO 5 -->
+    <section id="cuento4" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 5: El Caballero y las Espuelas de Oro</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>Déjate atrapar por el misterio de la noche colonial a través de un formato audiovisual envolvente. Este video cuento combina una atmósfera de suspenso, música de época y elementos visuales sombríos para revivir el andar de aquel vanidoso jinete. Además, incorpora una versión accesible para personas con discapacidad visual.
+</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/video5.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+    <!-- CUENTO 6 -->
+    <section id="cuento5" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 6: El Puente del Diablo</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>El tiempo corre y el alma está en juego. Siente la tensión y el misticismo en cada segundo con el video de El Puente del Diablo. Con una atmósfera oscura e imponente, efectos visuales que te helarán la sangre y un sonido envolvente que recrea los martillazos de la medianoche, serás testigo del pacto más peligroso de la historia. No dejes que te lo cuenten: dale play y mira con tus propios ojos si el hombre pudo engañar al mismísimo demonio.</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/video6.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+    <!-- CUENTO 7 -->
+    <section id="cuento6" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 7: ETSA</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>¡Siente el rugido de la selva y la magia ancestral en tu pantalla! Déjate deslumbrar por la fuerza visual del video de ETSA. A través de paisajes exuberantes, una animación cargada de misticismo y los sonidos reales de la Amazonía, serás testigo de la batalla de un joven héroe por devolverle la vida y el canto a la selva. No te pierdas esta aventura épica: dale play y vuela junto a las aves de vuelta a la libertad.</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/cuento7.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+    <!-- CUENTO 8 -->
+    <section id="cuento7" class="seccion">
+      <a href="#biblioteca" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Biblioteca</a>
+      <div class="primeraparte">
+        <h1>Cuento 8: La Fiesta del Chonta</h1>
+      </div>
+      <div class="bloque">
+        <div class="texto">
+          <h1>Video Cuento</h1>
+          <p>¡Siente el ritmo de los tambores y la energía de la Amazonía! Te invitamos a vivir una experiencia visual y sonora sin igual con el video de La Fiesta de la Chonta. A través de colores vibrantes, cantos sagrados enraizados en el tiempo y una producción que te llevará directo al centro del ritual, descubrirás cómo una comunidad entera celebra la abundancia de la tierra. No te quedes fuera de la celebración: dale play y danza junto a los espíritus de la selva.</p>
+        </div>
+        <video class="imagen-principal" controls playsinline>
+          <source src="img/video8.mp4" type="video/mp4">Tu navegador no soporta la etiqueta de video.
+        </video>
+      </div>
+    </section>
+
+  </div><!-- fin content-sections -->
+
+  <!-- ==================== SECCIÓN JUEGOS ==================== -->
+  <section id="juegos" class="seccion">
+    <div class="primeraparte">
+      <h1>Juegos</h1>
+      <p>Pon a prueba tu conocimiento sobre los cuentos de la comunidad de Calderón y de todo el Ecuador</p>
+    </div>
+
+   <div id="menu-juegos">
+
+  <!-- LEYENDAS DESTACADAS -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+
+    <div class="tarjeta-hero" onclick="abrirGrupo('leyenda1')">
+      <span class="badge-destacado"><i class="fas fa-star"></i> DESTACADO</span>
+      <img src="img/juegos1.png" alt="leyenda1" class="hero-img">
+      <h2>🎮 Juegos de la Leyenda de SAMKA CANCHA</h2>
+      <p>¡Aquí encontrarás dos juegos sobre la leyenda de SAMKA CANCHA de CALDERÓN!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-hero" onclick="abrirGrupo('leyenda2')">
+      <span class="badge-destacado"><i class="fas fa-star"></i> DESTACADO</span>
+      <img src="img/juegos2.png" alt="leyenda2" class="hero-img">
+      <h2>🎮 Juegos de la Leyenda del Maiz Encatando de Calderón</h2>
+      <p>¡Aquí encontrarás dos juegos sobre la Leyenda del Maiz Encatando de CALDERÓN!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+  </div>
+
+  <!-- DIVISOR -->
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+    <div style="flex:1; height:1px; background:var(--dorado); opacity:0.4;"></div>
+    <span style="font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--dorado); letter-spacing:1.5px; text-transform:uppercase;">Más juegos</span>
+    <div style="flex:1; height:1px; background:var(--dorado); opacity:0.4;"></div>
+  </div>
+
+  <!-- RESTO DE JUEGOS -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda3')">
+      <img src="img/juegos3.png" alt="leyenda3" class="sec-img">
+      <h2>🎮COSTA🎮: Juego de la Leyenda Los Gagones</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de Los Gagones!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda4')">
+      <img src="img/juegos4.png" alt="leyenda4" class="sec-img">
+      <h2>🎮COSTA🎮: Juego de La Niña del Cacao</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de La Niña del Cacao!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda5')">
+      <img src="img/juegos5.png" alt="leyenda5" class="sec-img">
+      <h2>🎮SIERRA🎮: Juego de El Caballero y las Espuelas de Oro</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de El Caballero y las Espuelas de Oro!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda6')">
+      <img src="img/juegos6.png" alt="leyenda6" class="sec-img">
+      <h2>🎮SIERRA🎮: Juego de El Puente del Diablo</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de El Puente del Diablo!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda7')">
+      <img src="img/juegos7.png" alt="leyenda7" class="sec-img">
+      <h2>🎮ORIENTE🎮: Juego de La Fiesta del Chonta</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de La Fiesta del Chonta!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+    <div class="tarjeta-sec" onclick="abrirGrupo('leyenda8')">
+      <img src="img/juegos8.png" alt="leyenda8" class="sec-img">
+      <h2>🎮ORIENTE🎮: Juego de Etsa</h2>
+      <p>¡Aquí encontrarás 1 juego sobre la leyenda de Etsa!</p>
+      <button class="btn-cuento">Ver juegos ›</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+    <div id="zona-juego" style="display:none;">
+      <button class="btn-volver" onclick="cerrarJuego()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <iframe id="frame-juego" src="" style="width:100%; height:100vh; border:none; border-radius:15px; margin-top:15px;"></iframe>
+    </div>
+
+    <div id="pantalla-leyenda1" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de la Leyenda de SAMKA CANCHA</h1><p>Elige un juego para comenzar</p></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini1.png" alt="juego1" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 1 - ¡Crucigrama Interactivo!</h2><p>¡Acepta el desafío del Inca! Entra al interactivo de la Samka Cancha y descubre los diferentes secretosa través de este crucigrama.</p><button class="btn-cuento" onclick="abrirJuego('juego1')">Jugar ›</button></div></div>
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini2.png" alt="juego2" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 2 - Un juego de decisiones</h2><p>¿Tu corazón es tan puro como el de un príncipe o princesa real? ¡Toma las decisiones correctas ante los dioses y sobrevive a las fieras de la Samka Cancha!</p><button class="btn-cuento" onclick="abrirJuego('juego2')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda2" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de la Leyenda del Maiz Encatando de Calderón</h1><p>Elige un juego para comenzar</p></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini3.png" alt="juego3" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 3 - Reconstruye la Leyenda del Maíz Encantado</h2><p>¡Pon las escenas de la leyenda en el orden correcto y responde preguntas de comprensión para despertar el maíz mágico!</p><button class="btn-cuento" onclick="abrirJuego('juego3')">Jugar ›</button></div></div>
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini4.png" alt="juego4" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 4 - Completa los desafíos de la Leyenda del Maíz Encantado</h2><p>Eres Carlitos. La abuelita Rosa te ha contado el secreto del maíz mágico. ¿Podrás tomar las decisiones correctas para despertarlo?</p><button class="btn-cuento" onclick="abrirJuego('juego4')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda3" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de la Leyenda Los Gagones</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini5.png" alt="juego5" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 5 - Leyenda Los Gagones</h2><p>Elije la respuesta correcta según la leyenda.</p><button class="btn-cuento" onclick="abrirJuego('juego5')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda4" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de La Niña del Cacao</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini6.png" alt="juego6" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 6 - Responde las preguntas</h2><p>¡Una aventura para salvar el río! - responde el siguiente quizziz</p><button class="btn-cuento" onclick="abrirJuego('juego6')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda5" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de El Caballero y las Espuelas de Oro</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini7.png" alt="juego7" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 7 - Trata de sobrevivir mantiendo la fe y escapar</h2><p>Juego al estilo Mario Bross en el que tendras q salvar a tu hijo</p><button class="btn-cuento" onclick="abrirJuego('juego7')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda6" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de El Puente del Diablo</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini8.png" alt="juego8" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 8 - El puente del Diablo</h2><p>Encuentra los pares con los personajes y elementos del cuento del puente del Diablo</p><button class="btn-cuento" onclick="abrirJuego('juego8')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda7" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de La Fiesta del Chonta</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini9.png" alt="juego9" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 9 - ¡La Fiesta de la Chonta!</h2><p>¿Sabes cómo se celebra? ¡Pon los pasos en el orden correcto!</p><button class="btn-cuento" onclick="abrirJuego('juego9')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+    <div id="pantalla-leyenda8" style="display:none;">
+      <button class="btn-volver" onclick="cerrarGrupo()"><i class="fas fa-arrow-left"></i> Volver a Juegos</button>
+      <div class="primeraparte" style="margin-bottom:20px;"><h1>🎮 Juegos de Etsa</h1></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; max-width:600px; margin:0 auto;">
+        <div class="tarjeta-cuento tarjeta-principal"><img src="img/juegomini10.png" alt="juego10" class="miniatura-cuento"><div class="tarjeta-info"><h2>🎮 Juego 10 - Una aventura shuar de valentía y verdad</h2><p>Etsa y el Sol: ayuda a salvar a su pueblo mediante una serie de actividades</p><button class="btn-cuento" onclick="abrirJuego('juego10')">Jugar ›</button></div></div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer style="background-color:#2d5a1b; border-radius:20px; color:#ffffff; padding:20px 24px; font-family:'Space Grotesk',sans-serif; margin-top:10px; text-align:center; border-top:3px solid var(--dorado);">
+    <div style="display:inline-flex; justify-content:center; align-items:center; gap:15px; flex-wrap:wrap;">
+      <img src="img/Imagen1 UNL.png" alt="Universidad Nacional de Loja" style="width:130px; height:auto; filter:brightness(0) invert(1);">
+      <div style="font-size:clamp(11px,2.5vw,14px); line-height:1.8; text-align:center; color:#ffffff;">
+        <strong style="color:var(--dorado);">Ciudad Universitaria Guillermo Falconí</strong><br>
+        Loja - Ecuador<br>
+        ☎️ <strong style="color:#ffffff;">07 2593550</strong> (Opción 1 - Presencial)<br>
+        ☎️ <strong style="color:#ffffff;">07 2593550</strong> (Opción 2 - Distancia)<br>
+        📧 <strong style="color:#ffffff;">comunicacion@unl.edu.ec</strong><br>
+        📍 <a href="https://www.openstreetmap.org/?mlat=-4.03364&mlon=-79.20311#map=17/-4.03364/-79.20311" rel="noopener noreferrer" target="_blank" style="color:var(--dorado); font-weight:700;">Ver ubicación en el mapa</a>
+      </div>
+    </div>
+    <div style="text-align:center; font-size:12px; margin-top:15px; color:rgba(255,255,255,0.65);">© 2025 Universidad Nacional de Loja. Todos los derechos reservados.</div>
+  </footer>
+
+  <script>
+    function abrirJuego(juego) {
+      const rutas = { 'juego1':'juego1.html','juego2':'juego2.html','juego3':'juego3.html','juego4':'juego4.html','juego5':'juego5.html','juego6':'juego6.html','juego7':'juego7.html','juego8':'juego8.html','juego9':'juego9.html','juego10':'juego10.html' };
+      document.getElementById('menu-juegos').style.display = 'none';
+      ['leyenda1','leyenda2','leyenda3','leyenda4','leyenda5','leyenda6','leyenda7','leyenda8'].forEach(function(l) { document.getElementById('pantalla-' + l).style.display = 'none'; });
+      document.querySelector('#juegos .primeraparte').style.display = 'none';
+      document.getElementById('zona-juego').style.display = 'block';
+      document.getElementById('frame-juego').src = rutas[juego];
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function cerrarJuego() {
+      document.getElementById('zona-juego').style.display = 'none';
+      document.getElementById('menu-juegos').style.display = 'grid';
+      document.getElementById('frame-juego').src = '';
+      document.querySelector('#juegos .primeraparte').style.display = 'block';
+    }
+    function abrirGrupo(cual) {
+      document.getElementById('menu-juegos').style.display = 'none';
+      document.querySelector('#juegos .primeraparte').style.display = 'none';
+      document.getElementById('pantalla-' + cual).style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function cerrarGrupo() {
+      ['leyenda1','leyenda2','leyenda3','leyenda4','leyenda5','leyenda6','leyenda7','leyenda8'].forEach(function(l) { document.getElementById('pantalla-' + l).style.display = 'none'; });
+      document.getElementById('menu-juegos').style.display = 'grid';
+      document.querySelector('#juegos .primeraparte').style.display = 'block';
+    }
+    var musicaActiva = false;
+    function mostrarPlayer() { document.getElementById('player-juegos').style.display = 'flex'; }
+    function ocultarPlayer() {
+      document.getElementById('player-juegos').style.display = 'none';
+      var audio = document.getElementById('musica-juegos');
+      audio.pause();
+      document.getElementById('btn-play-pausa').textContent = '▶';
+      musicaActiva = false;
+    }
+    function toggleMusica() {
+      var audio = document.getElementById('musica-juegos');
+      var btn = document.getElementById('btn-play-pausa');
+      if (audio.paused) { audio.volume = parseFloat(document.getElementById('slider-volumen').value); audio.play(); btn.textContent = '⏸'; musicaActiva = true; }
+      else { audio.pause(); btn.textContent = '▶'; musicaActiva = false; }
+    }
+    function cambiarVolumen(val) { document.getElementById('musica-juegos').volume = parseFloat(val); }
+    document.querySelectorAll('.menu a').forEach(function(enlace) {
+      enlace.addEventListener('click', function() {
+        if (this.getAttribute('href') === '#juegos') { mostrarPlayer(); } else { ocultarPlayer(); }
+      });
+    });
+    window.addEventListener('hashchange', function() {
+      if (window.location.hash === '#juegos') { mostrarPlayer(); } else { ocultarPlayer(); }
+    });
+  </script>
+
+  <script>
+    document.querySelector('a[href="#inicio"]').addEventListener('click', function() {
+      setTimeout(() => {
+        const ci = document.getElementById('contenido-inicio');
+        if (ci) ci.style.display = 'block';
+      }, 100);
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.bloque, .primeraparte, .tarjeta-cuento').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+
+  
+
+</body>
+</html>

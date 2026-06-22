@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Caballero de las Espuelas de Oro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background:#08040a;
+  font-family:'IM Fell English',serif;
+  overflow:hidden;
+  height:100vh;
+  user-select:none;
+}
+
+/* ===== PANTALLAS ===== */
+#pantalla-intro, #pantalla-fin {
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 40%, #1a0820 0%, #08040a 75%);
+  z-index:200;padding:20px;text-align:center;
+}
+#pantalla-fin{display:none;}
+
+.titulo-principal {
+  font-family:'Cinzel',serif;font-weight:900;
+  font-size:clamp(1.4rem,4vw,3rem);
+  color:#ffd700;
+  text-shadow:0 0 40px #ff6600,0 0 80px #ff3300;
+  margin-bottom:6px;
+  animation:ardor 2.5s ease-in-out infinite;
+}
+@keyframes ardor{
+  0%,100%{text-shadow:0 0 30px #ff6600,0 0 60px #ff3300;}
+  50%{text-shadow:0 0 60px #ffd700,0 0 120px #ff6600;}
+}
+.subtitulo-intro{
+  font-style:italic;color:#cc8844;
+  font-size:clamp(0.85rem,2vw,1.2rem);
+  margin-bottom:22px;
+}
+
+/* Historia por capítulos */
+#capitulo-container {
+  max-width:560px;width:100%;
+  border:1px solid #4a1a00;
+  border-radius:10px;
+  background:rgba(40,10,0,0.6);
+  padding:18px 22px;
+  margin-bottom:20px;
+}
+.cap-num{
+  font-family:'Cinzel',serif;font-size:0.75rem;
+  color:#886633;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:6px;
+}
+.cap-texto{
+  color:#e8c090;font-style:italic;
+  font-size:clamp(0.82rem,1.6vw,1rem);
+  line-height:1.8;min-height:60px;
+}
+.cap-nav{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:12px;
+}
+.btn-nav{
+  background:none;border:1px solid #663300;
+  color:#cc8844;padding:5px 14px;
+  border-radius:20px;cursor:pointer;
+  font-family:'IM Fell English',serif;
+  font-size:0.85rem;transition:all 0.2s;
+}
+.btn-nav:hover{background:#663300;color:#ffd700;}
+.btn-nav:disabled{opacity:0.3;cursor:default;}
+.cap-dots{display:flex;gap:6px;}
+.dot{width:8px;height:8px;border-radius:50%;
+  background:#442200;transition:background 0.3s;}
+.dot.activo{background:#ffd700;}
+
+.instrucciones-box{
+  max-width:500px;
+  background:rgba(20,5,0,0.7);
+  border:1px solid #331100;
+  border-radius:8px;padding:12px 18px;
+  color:#aa8855;font-size:0.85rem;
+  line-height:2;margin-bottom:18px;
+}
+.instrucciones-box kbd{
+  background:#222;border:1px solid #555;
+  border-radius:3px;padding:1px 7px;
+  color:#ffd700;font-family:monospace;font-size:0.8rem;
+}
+
+.btn-comenzar{
+  font-family:'Cinzel',serif;font-weight:700;
+  font-size:1.1rem;color:#08040a;
+  background:linear-gradient(135deg,#ffd700,#ff8800);
+  border:none;padding:13px 38px;border-radius:5px;
+  cursor:pointer;letter-spacing:2px;
+  box-shadow:0 0 25px rgba(255,140,0,0.5);
+  transition:all 0.2s;
+}
+.btn-comenzar:hover{transform:scale(1.06);box-shadow:0 0 40px rgba(255,140,0,0.8);}
+
+/* ===== JUEGO ===== */
+#juego-container{
+  display:none;position:fixed;inset:0;
+}
+#gameCanvas{width:100%;height:100%;display:block;}
+
+/* HUD */
+#hud{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;
+  align-items:center;padding:8px 16px;
+  background:rgba(8,4,10,0.85);
+  border-bottom:1px solid #3a1500;
+  z-index:50;pointer-events:none;
+}
+.hud-bloque{
+  font-family:'Cinzel',serif;
+  color:#ffd700;
+  font-size:clamp(0.7rem,1.6vw,0.95rem);
+  text-shadow:0 0 8px #ff6600;
+  display:flex;align-items:center;gap:8px;
+}
+#barra-fe-wrap{
+  width:120px;height:10px;
+  background:#1a0800;border-radius:5px;
+  border:1px solid #442200;overflow:hidden;
+}
+#barra-fe{
+  height:100%;background:linear-gradient(90deg,#ffd700,#ffffff);
+  border-radius:5px;transition:width 0.3s;
+}
+
+/* Narración en juego */
+#narracion{
+  position:fixed;bottom:60px;left:50%;
+  transform:translateX(-50%);
+  max-width:min(600px,90vw);
+  background:rgba(8,4,10,0.92);
+  border:1px solid #3a1500;
+  border-radius:8px;padding:10px 18px;
+  color:#e8c090;font-style:italic;
+  font-size:clamp(0.78rem,1.6vw,0.95rem);
+  text-align:center;line-height:1.6;
+  z-index:50;pointer-events:none;
+  display:none;
+  animation:aparecer 0.5s ease;
+}
+@keyframes aparecer{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* Controles móvil */
+#ctrl-movil{
+  position:fixed;bottom:10px;left:0;right:0;
+  display:none;justify-content:space-between;
+  padding:0 15px;z-index:50;
+}
+.ctrl-btn{
+  background:rgba(255,215,0,0.15);
+  border:2px solid rgba(255,215,0,0.4);
+  color:#ffd700;font-size:1.2rem;
+  width:52px;height:52px;border-radius:50%;
+  cursor:pointer;display:flex;
+  align-items:center;justify-content:center;
+  touch-action:manipulation;
+}
+
+/* Pantalla fin */
+.fin-titulo{
+  font-family:'Cinzel',serif;font-weight:900;
+  font-size:clamp(1.4rem,4vw,2.5rem);
+  margin-bottom:14px;
+}
+.fin-titulo.v{color:#ffd700;text-shadow:0 0 30px #ffd700;}
+.fin-titulo.d{color:#ff3300;text-shadow:0 0 30px #ff0000;}
+.fin-texto{
+  color:#e8c090;font-style:italic;
+  max-width:500px;line-height:1.9;
+  font-size:clamp(0.85rem,1.6vw,1.05rem);
+  margin-bottom:20px;
+  border:1px solid #3a1500;
+  border-radius:8px;padding:14px 20px;
+  background:rgba(30,8,0,0.5);
+}
+.fin-morale{
+  color:#cc8844;font-size:0.9rem;
+  font-style:italic;margin-bottom:20px;
+  max-width:440px;
+}
+@media(max-width:768px){
+  #ctrl-movil{display:flex;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PANTALLA INTRO ===== -->
+<div id="pantalla-intro">
+  <div class="titulo-principal">🕯️ El Caballero y las<br>Espuelas de Oro 🕯️</div>
+  <div class="subtitulo-intro">— Leyenda de Loja, Ecuador —</div>
+
+  <div id="capitulo-container">
+    <div class="cap-num">La Historia — Capítulo <span id="cap-num-txt">1</span> de 5</div>
+    <div class="cap-texto" id="cap-texto"></div>
+    <div class="cap-nav">
+      <button class="btn-nav" id="btn-ant" onclick="navCap(-1)">← Anterior</button>
+      <div class="cap-dots" id="cap-dots"></div>
+      <button class="btn-nav" id="btn-sig" onclick="navCap(1)">Siguiente →</button>
+    </div>
+  </div>
+
+  <div class="instrucciones-box">
+    🎮 <strong>Controles:</strong> Mueve con <kbd>←</kbd><kbd>→</kbd> — Salta con <kbd>↑</kbd> o <kbd>Espacio</kbd><br>
+    🙏 Presiona <kbd>R</kbd> para <strong>rezar</strong> (aleja al Caballero)<br>
+    🏃 Llega a tu hijo y escapa antes de que el salón se hunda
+  </div>
+
+  <button class="btn-comenzar" onclick="iniciarJuego()">⚡ ENTRAR AL SALÓN ⚡</button>
+</div>
+
+<!-- ===== PANTALLA FIN ===== -->
+<div id="pantalla-fin">
+  <div class="fin-titulo" id="fin-titulo"></div>
+  <div class="fin-texto" id="fin-texto"></div>
+  <div class="fin-morale" id="fin-morale"></div>
+  <button class="btn-comenzar" onclick="reiniciar()">🔄 Intentar de nuevo</button>
+</div>
+
+<!-- ===== JUEGO ===== -->
+<div id="juego-container">
+  <canvas id="gameCanvas"></canvas>
+
+  <div id="hud">
+    <div class="hud-bloque">❤️ Vidas: <span id="vidas-hud">3</span></div>
+    <div class="hud-bloque">
+      🙏 Fe:
+      <div id="barra-fe-wrap"><div id="barra-fe" style="width:100%"></div></div>
+    </div>
+    <div class="hud-bloque">⏱️ <span id="tiempo-hud">90</span>s</div>
+    <div class="hud-bloque">🎯 <span id="fase-hud">Encuentra a tu hijo</span></div>
+  </div>
+
+  <div id="narracion"></div>
+
+  <div id="ctrl-movil">
+    <div style="display:flex;gap:8px;">
+      <button class="ctrl-btn" id="c-izq">◀</button>
+      <button class="ctrl-btn" id="c-der">▶</button>
+    </div>
+    <button class="ctrl-btn" id="c-rezar">🙏</button>
+    <button class="ctrl-btn" id="c-sal">▲</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   HISTORIA (capítulos intro)
+   ========================================================= */
+const CAPITULOS = [
+  {
+    titulo:1,
+    texto:`"Durante la feria de septiembre en Loja, la ciudad se llenaba de visitantes. Entre ellos llegaron cuatro jóvenes piuranas, hermosas y refinadas. Por envidia, las mujeres del pueblo les negaron hospedaje, y un hacendado les ofreció una hacienda abandonada en las afueras."`
+  },
+  {
+    titulo:2,
+    texto:`"La casa fue restaurada y pronto se convirtió en el lugar de fiestas nocturnas. La música, el vino y la danza llenaban el ambiente... pero nadie imaginaba que en aquel lugar antiguo empezaba a gestarse algo más oscuro."`
+  },
+  {
+    titulo:3,
+    texto:`"Una noche apareció un hombre alto, vestido de negro, con espuelas de oro que brillaban al andar. Su frase constante era: '¡Que se te hunda, que se te hunda!' Nadie lo había visto llegar, pero todos sintieron su presencia."`
+  },
+  {
+    titulo:4,
+    texto:`"Las jóvenes contrataron una sirvienta: una mujer humilde que vivía con su hijo cerca del río Malacatos. Una noche, el niño lloró y dijo que el caballero echaba chispas por los pies, la boca... y los ojos."`
+  },
+  {
+    titulo:5,
+    texto:`"La madre, aterrada, rezó con fervor: '¡Santo Dios, Santo Fuerte, Santo Inmortal!' Al escuchar la oración, el caballero gritó y atravesó el techo. El suelo del salón se abrió... todos fueron tragados por la tierra, menos la sirvienta y su hijo, protegidos por su fe."`
+  }
+];
+
+let capActual = 0;
+
+function renderCaps() {
+  document.getElementById('cap-texto').textContent = CAPITULOS[capActual].texto;
+  document.getElementById('cap-num-txt').textContent = capActual + 1;
+  document.getElementById('btn-ant').disabled = capActual === 0;
+  document.getElementById('btn-sig').disabled = capActual === CAPITULOS.length - 1;
+  const dots = document.getElementById('cap-dots');
+  dots.innerHTML = '';
+  CAPITULOS.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===capActual?' activo':'');
+    dots.appendChild(d);
+  });
+}
+function navCap(dir){ capActual = Math.max(0,Math.min(CAPITULOS.length-1,capActual+dir)); renderCaps(); }
+renderCaps();
+
+/* =========================================================
+   JUEGO
+   ========================================================= */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, ESC;
+let animId, juegoActivo = false;
+
+/* --- Estado global --- */
+let jug, caballero, hijo, salida;
+let losetas, particulas, chispas;
+let vidas, fe, tiempo, fase;
+// fase: 0=buscar hijo, 1=llevar hijo a salida
+let invuln, rezando, rezCooldown;
+let teclado={}, tIzq=false,tDer=false,tSal=false,tRez=false;
+let narQueue=[], narActivo=false;
+let timerInter;
+
+/* Narrativas en juego ordenadas */
+const NARR_JUEGO = [
+  { t:85, txt:'"La música llenaba el salón... pero algo en el caballero causaba inquietud."' },
+  { t:70, txt:'"Las espuelas de oro brillaban con cada paso. ¡Tin, tin, tin!"' },
+  { t:55, txt:'"¡El suelo empieza a hundirse! ¡Corre antes de que sea tarde!"' },
+  { t:40, txt:'"¡Santo Dios, Santo Fuerte, Santo Inmortal! — rezó la sirvienta."' },
+  { t:25, txt:'"El caballero gritó y atravesó el techo. ¡Escapa ahora!"' },
+  { t:10, txt:'"¡Que se te hunda, que se te hunda! — resonó su voz maldita."' },
+];
+let narrUsadas = new Set();
+
+function resize(){
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  ESC = Math.min(W/900, H/550);
+}
+
+/* ---- INICIO ---- */
+function iniciarJuego(){
+  document.getElementById('pantalla-intro').style.display='none';
+  document.getElementById('pantalla-fin').style.display='none';
+  document.getElementById('juego-container').style.display='block';
+  resize();
+  resetEstado();
+  juegoActivo = true;
+  loop();
+}
+
+function resetEstado(){
+  vidas=3; fe=100; tiempo=90; fase=0;
+  invuln=0; rezando=0; rezCooldown=0;
+  narrUsadas=new Set(); narActivo=false;
+
+  const COLS=14, FILAS=8;
+  const TW=(W/COLS), TH=((H-50)/FILAS);
+
+  // Losetas del salón (algunas se hundirán)
+  losetas=[];
+  for(let f=0;f<FILAS;f++){
+    for(let c=0;c<COLS;c++){
+      losetas.push({
+        col:c,fila:f,
+        x:c*TW,y:50+f*TH,w:TW,h:TH,
+        estado:'solida', // 'solida','temblando','hundiendo','hundida'
+        timer:0,
+        decoracion: Math.random()<0.2 ? (Math.random()<0.5?'candelabro':'mesa') : null,
+        colorBase: `hsl(${25+Math.random()*10},${40+Math.random()*15}%,${12+Math.random()*8}%)`
+      });
+    }
+  }
+
+  // Jugador (sirvienta) — centro izquierda
+  jug={
+    x:TW*1.5, y:50+TH*4,
+    w:22*ESC, h:32*ESC,
+    vx:0,vy:0,
+    enSuelo:false,
+    frame:0,fTimer:0,
+    miraDer:true
+  };
+
+  // Hijo — al fondo derecha
+  hijo={
+    x:TW*11, y:50+TH*6,
+    w:16*ESC,h:20*ESC,
+    rescatado:false,
+    anim:0
+  };
+
+  // Salida — esquina superior izquierda
+  salida={
+    x:TW*0.5, y:50+TH*0.5,
+    w:TW,h:TH
+  };
+
+  // Caballero (diablo) — empieza al fondo
+  caballero={
+    x:TW*7,y:50+TH*3.5,
+    w:30*ESC,h:44*ESC,
+    vx:0,vy:0,
+    enSuelo:false,
+    vel:1.2*ESC,
+    anim:0,
+    estado:'patrullando', // 'patrullando','persiguiendo','asustado'
+    asustTimer:0,
+    dir:1,
+    patX:TW*7
+  };
+
+  particulas=[]; chispas=[];
+
+  // Hundir losetas progresivamente
+  if(window._hundir) clearInterval(window._hundir);
+  window._hundir = setInterval(hundirLoseta, 3000);
+
+  // Timer
+  if(timerInter) clearInterval(timerInter);
+  timerInter=setInterval(()=>{
+    if(!juegoActivo)return;
+    tiempo--;
+    // Narrativas programadas
+    NARR_JUEGO.forEach(n=>{
+      if(!narrUsadas.has(n.t) && tiempo<=n.t){
+        narrUsadas.add(n.t);
+        mostrarNarr(n.txt);
+      }
+    });
+    if(tiempo<=0) terminar(false,'tiempo');
+    actualizarHUD();
+  },1000);
+  actualizarHUD();
+}
+
+function reiniciar(){
+  if(animId) cancelAnimationFrame(animId);
+  clearInterval(timerInter);
+  clearInterval(window._hundir);
+  document.getElementById('pantalla-fin').style.display='none';
+  iniciarJuego();
+}
+
+/* ---- HUD ---- */
+function actualizarHUD(){
+  document.getElementById('vidas-hud').textContent=vidas;
+  document.getElementById('tiempo-hud').textContent=tiempo;
+  document.getElementById('barra-fe').style.width=fe+'%';
+  document.getElementById('fase-hud').textContent=
+    fase===0?'¡Encuentra a tu hijo!' : '¡Escapa por la puerta!';
+}
+
+/* ---- NARRATIVA EN JUEGO ---- */
+function mostrarNarr(txt){
+  const el=document.getElementById('narracion');
+  el.textContent=txt;
+  el.style.display='block';
+  clearTimeout(window._narTO);
+  window._narTO=setTimeout(()=>el.style.display='none',4500);
+}
+
+/* ---- HUNDIR LOSETAS ---- */
+function hundirLoseta(){
+  if(!juegoActivo)return;
+  // Hundir 2-4 losetas aleatorias que no estén hundidas
+  const disponibles=losetas.filter(l=>l.estado==='solida');
+  const n=2+Math.floor(Math.random()*3);
+  for(let i=0;i<n&&i<disponibles.length;i++){
+    const idx=Math.floor(Math.random()*disponibles.length);
+    const l=disponibles.splice(idx,1)[0];
+    // No hundir la zona de inicio ni la salida
+    if(l.col<2 && l.fila<2) continue;
+    l.estado='temblando';
+    l.timer=120; // frames para temblar antes de hundirse
+  }
+}
+
+/* ---- INPUT ---- */
+window.addEventListener('keydown',e=>{
+  teclado[e.code]=true;
+  if(e.code==='Space') e.preventDefault();
+});
+window.addEventListener('keyup',e=>teclado[e.code]=false);
+
+['c-izq','c-der','c-sal','c-rezar'].forEach(id=>{
+  const b=document.getElementById(id);
+  b.addEventListener('touchstart',e=>{e.preventDefault();
+    if(id==='c-izq') tIzq=true;
+    if(id==='c-der') tDer=true;
+    if(id==='c-sal') tSal=true;
+    if(id==='c-rezar') tRez=true;
+  });
+  b.addEventListener('touchend',e=>{e.preventDefault();
+    if(id==='c-izq') tIzq=false;
+    if(id==='c-der') tDer=false;
+    if(id==='c-sal') tSal=false;
+    if(id==='c-rezar') tRez=false;
+  });
+});
+
+/* ====================================================
+   UPDATE
+   ==================================================== */
+function update(){
+  if(!juegoActivo)return;
+
+  const VEL=3*ESC, GRAV=0.45*ESC, SALTO=-11*ESC;
+  const izq=teclado['ArrowLeft']||teclado['KeyA']||tIzq;
+  const der=teclado['ArrowRight']||teclado['KeyD']||tDer;
+  const sal=teclado['ArrowUp']||teclado['Space']||teclado['KeyW']||tSal;
+  const rez=teclado['KeyR']||tRez;
+
+  /* --- REZAR --- */
+  if(rezCooldown>0) rezCooldown--;
+  if(rez && rezCooldown<=0){
+    rezando=60;
+    rezCooldown=240;
+    fe=Math.min(100,fe+20);
+    caballero.estado='asustado';
+    caballero.asustTimer=180;
+    mostrarNarr('🙏 "¡Santo Dios, Santo Fuerte, Santo Inmortal!" — El caballero retrocede aterrado...');
+    // Partículas de luz
+    for(let i=0;i<15;i++) addParticula(jug.x+jug.w/2, jug.y+jug.h/2,'#ffffc0',true);
+  }
+  if(rezando>0) rezando--;
+
+  /* --- MOVIMIENTO JUGADOR --- */
+  if(izq){jug.vx=-VEL; jug.miraDer=false;}
+  else if(der){jug.vx=VEL; jug.miraDer=true;}
+  else jug.vx*=0.75;
+
+  if(sal && jug.enSuelo){jug.vy=SALTO; jug.enSuelo=false;}
+  jug.vy+=GRAV;
+  jug.x+=jug.vx; jug.y+=jug.vy;
+  jug.enSuelo=false;
+
+  /* --- COLISIÓN JUGADOR CON LOSETAS --- */
+  for(const l of losetas){
+    if(l.estado==='hundida') continue;
+    if(colRect(jug, l) && jug.vy>=0 &&
+       jug.y+jug.h < l.y+l.h*0.6){
+      jug.y=l.y-jug.h;
+      jug.vy=0;
+      jug.enSuelo=true;
+      // Si está temblando, acelerar hundimiento
+      if(l.estado==='temblando') l.timer-=2;
+    }
+  }
+
+  // Límites
+  jug.x=Math.max(0,Math.min(W-jug.w,jug.x));
+  if(jug.y>H+50) danoJugador();
+
+  // Animación
+  jug.fTimer++;
+  if(jug.fTimer>8){jug.frame=(jug.frame+1)%4;jug.fTimer=0;}
+
+  /* --- HIJO --- */
+  hijo.anim+=0.05;
+  if(!hijo.rescatado){
+    if(colRect(jug,hijo)){
+      hijo.rescatado=true;
+      fase=1;
+      mostrarNarr('👦 ¡Encontraste a tu hijo! Ahora corre a la PUERTA (arriba izquierda) 🚪');
+      for(let i=0;i<12;i++) addParticula(hijo.x,hijo.y,'#ffdd88',true);
+    }
+  }
+
+  /* --- SALIDA --- */
+  if(fase===1 && hijo.rescatado){
+    hijo.x=jug.x+jug.w/2-hijo.w/2;
+    hijo.y=jug.y-hijo.h;
+    if(colRect(jug,salida)){
+      terminar(true);
+      return;
+    }
+  }
+
+  /* --- CABALLERO --- */
+  actualizarCaballero();
+
+  /* --- LOSETAS --- */
+  for(const l of losetas){
+    if(l.estado==='temblando'){
+      l.timer--;
+      if(Math.random()<0.15) addChispa(l.x+Math.random()*l.w, l.y+l.h);
+      if(l.timer<=0){
+        l.estado='hundiendo';
+        l.timer=40;
+      }
+    } else if(l.estado==='hundiendo'){
+      l.timer--;
+      if(l.timer<=0) l.estado='hundida';
+    }
+  }
+
+  /* --- FE decrece con tiempo --- */
+  fe=Math.max(0,fe-0.04);
+  if(fe<=0) terminar(false,'fe');
+
+  /* --- INVULNERABILIDAD --- */
+  if(invuln>0) invuln--;
+
+  /* --- PARTICULAS --- */
+  particulas=particulas.filter(p=>p.vida>0);
+  for(const p of particulas){p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.vida--;p.r*=0.96;}
+  chispas=chispas.filter(c=>c.vida>0);
+  for(const c of chispas){c.x+=c.vx;c.y+=c.vy;c.vida--;}
+}
+
+function actualizarCaballero(){
+  const VEL_PATROL=1.2*ESC, VEL_PERSIGUE=2*ESC, GRAV=0.45*ESC;
+
+  if(caballero.estado==='asustado'){
+    caballero.asustTimer--;
+    if(caballero.asustTimer<=0) caballero.estado='patrullando';
+    // Huye del jugador
+    const dx=jug.x-caballero.x;
+    caballero.vx=(dx>0?-1:1)*VEL_PATROL;
+  } else {
+    const dist=distancia(jug,caballero);
+    if(dist<250){
+      caballero.estado='persiguiendo';
+      const dx=jug.x-caballero.x;
+      caballero.vx=(dx>0?1:-1)*VEL_PERSIGUE;
+      caballero.dir=dx>0?1:-1;
+    } else {
+      caballero.estado='patrullando';
+      caballero.patX+= caballero.vx;
+      if(caballero.patX>W*0.8||caballero.patX<W*0.2) caballero.vx*=-1;
+      caballero.vx=caballero.vx||VEL_PATROL;
+    }
+    // Chispas en pies
+    if(Math.random()<0.25) addChispa(caballero.x+caballero.w/2,caballero.y+caballero.h-2);
+  }
+
+  caballero.vy+=GRAV;
+  caballero.x+=caballero.vx;
+  caballero.y+=caballero.vy;
+  caballero.enSuelo=false;
+
+  for(const l of losetas){
+    if(l.estado==='hundida') continue;
+    if(colRect(caballero,l) && caballero.vy>=0 &&
+       caballero.y+caballero.h < l.y+l.h*0.6){
+      caballero.y=l.y-caballero.h;
+      caballero.vy=0;
+      caballero.enSuelo=true;
+    }
+  }
+  caballero.x=Math.max(0,Math.min(W-caballero.w,caballero.x));
+  caballero.anim+=0.08;
+
+  // Colisión con jugador
+  if(invuln<=0 && caballero.estado!=='asustado'){
+    if(colRect(jug,caballero)) danoJugador();
+  }
+}
+
+function danoJugador(){
+  if(invuln>0)return;
+  vidas--;invuln=100;
+  fe=Math.max(0,fe-20);
+  for(let i=0;i<8;i++) addParticula(jug.x+jug.w/2,jug.y,'#ff3300',false);
+  mostrarNarr('😱 "¡Las espuelas de oro te rozaron!" — Reza para alejar al Caballero (tecla R)');
+  actualizarHUD();
+  if(vidas<=0) terminar(false,'vidas');
+}
+
+/* ====================================================
+   DRAW
+   ==================================================== */
+function draw(){
+  // Fondo salón de baile colonial
+  ctx.fillStyle='#0d0608';
+  ctx.fillRect(0,0,W,H);
+
+  // Franja HUD
+  ctx.fillStyle='#08040a';
+  ctx.fillRect(0,0,W,50);
+
+  /* --- LOSETAS --- */
+  for(const l of losetas){
+    if(l.estado==='hundida'){
+      // Agujero infernal
+      const ag=ctx.createRadialGradient(l.x+l.w/2,l.y+l.h/2,0,l.x+l.w/2,l.y+l.h/2,l.w/2);
+      ag.addColorStop(0,'#ff2200');
+      ag.addColorStop(0.3,'#880000');
+      ag.addColorStop(1,'#000');
+      ctx.fillStyle=ag;
+      ctx.fillRect(l.x,l.y,l.w,l.h);
+      // Humo
+      if(Math.random()<0.3){
+        ctx.fillStyle=`rgba(80,30,10,0.15)`;
+        ctx.beginPath();
+        ctx.arc(l.x+Math.random()*l.w,l.y+Math.random()*l.h*0.5,10+Math.random()*15,0,Math.PI*2);
+        ctx.fill();
+      }
+      continue;
+    }
+
+    // Color base + efecto temblor
+    let shade=0;
+    if(l.estado==='temblando'){
+      shade=Math.sin(Date.now()/50)*3;
+      ctx.fillStyle=`hsl(${20+Math.abs(shade)*5},50%,${10+Math.abs(shade)}%)`;
+    } else {
+      ctx.fillStyle=l.colorBase;
+    }
+    ctx.fillRect(l.x+shade,l.y,l.w,l.h);
+
+    // Borde loseta
+    ctx.strokeStyle=l.estado==='temblando'?'#aa4400':'#1e0e05';
+    ctx.lineWidth=1;
+    ctx.strokeRect(l.x+shade,l.y,l.w,l.h);
+
+    // Decoraciones
+    if(l.decoracion==='candelabro'){
+      drawCandelabro(l.x+l.w/2+shade,l.y+2,l.h*0.7);
+    } else if(l.decoracion==='mesa'){
+      ctx.fillStyle='#1a0a04';
+      ctx.fillRect(l.x+l.w*0.2+shade,l.y+l.h*0.4,l.w*0.6,l.h*0.4);
+    }
+  }
+
+  /* --- SALIDA (puerta) --- */
+  drawPuerta(salida.x,salida.y,salida.w,salida.h);
+
+  /* --- HIJO --- */
+  if(!hijo.rescatado){
+    drawHijo(hijo.x,hijo.y,hijo.w,hijo.h,hijo.anim);
+  }
+
+  /* --- CABALLERO --- */
+  drawCaballero();
+
+  /* --- JUGADOR --- */
+  if(!(invuln>0 && Math.floor(invuln/5)%2===0)){
+    drawJugador();
+  }
+
+  /* --- PARTÍCULAS --- */
+  for(const p of particulas){
+    ctx.globalAlpha=p.vida/p.maxVida;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  for(const c of chispas){
+    ctx.globalAlpha=c.vida/20;
+    ctx.fillStyle=c.color;
+    ctx.fillRect(c.x,c.y,2,2);
+  }
+  ctx.globalAlpha=1;
+
+  /* --- OVERLAY REZAR --- */
+  if(rezando>0){
+    ctx.fillStyle=`rgba(255,255,200,${rezando/60*0.15})`;
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=`rgba(255,255,255,${rezando/60*0.8})`;
+    ctx.font=`bold ${clamp(18,3,40)}px 'Cinzel',serif`;
+    ctx.textAlign='center';
+    ctx.fillText('🙏 Santo Dios, Santo Fuerte, Santo Inmortal...',W/2,H*0.4);
+  }
+
+  /* --- VIGNETTE --- */
+  const vig=ctx.createRadialGradient(W/2,H/2,H*0.3,W/2,H/2,H*0.85);
+  vig.addColorStop(0,'transparent');
+  vig.addColorStop(1,'rgba(0,0,0,0.7)');
+  ctx.fillStyle=vig;
+  ctx.fillRect(0,0,W,H);
+}
+
+function drawJugador(){
+  const x=jug.x,y=jug.y,w=jug.w,h=jug.h;
+  ctx.save();
+  if(!jug.miraDer){ctx.translate(x+w/2,y+h/2);ctx.scale(-1,1);ctx.translate(-(x+w/2),-(y+h/2));}
+
+  // Sombra
+  ctx.fillStyle='rgba(0,0,0,0.4)';
+  ctx.beginPath();ctx.ellipse(x+w/2,y+h+2,w/2,3,0,0,Math.PI*2);ctx.fill();
+
+  // Falda/vestido (sirvienta colonial)
+  ctx.fillStyle='#3a2010';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.1,y+h*0.38);
+  ctx.lineTo(x+w*0.9,y+h*0.38);
+  ctx.lineTo(x+w+2,y+h);
+  ctx.lineTo(x-2,y+h);
+  ctx.closePath();ctx.fill();
+
+  // Delantal blanco
+  ctx.fillStyle='rgba(240,230,210,0.85)';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.25,y+h*0.42);
+  ctx.lineTo(x+w*0.75,y+h*0.42);
+  ctx.lineTo(x+w*0.8,y+h*0.85);
+  ctx.lineTo(x+w*0.2,y+h*0.85);
+  ctx.closePath();ctx.fill();
+
+  // Cuerpo
+  ctx.fillStyle='#3a2010';
+  ctx.fillRect(x+w*0.2,y+h*0.25,w*0.6,w*0.15);
+
+  // Cabeza
+  ctx.fillStyle='#c8956a';
+  ctx.beginPath();ctx.arc(x+w/2,y+h*0.18,w*0.38,0,Math.PI*2);ctx.fill();
+
+  // Cofia
+  ctx.fillStyle='#f0ead8';
+  ctx.beginPath();ctx.ellipse(x+w/2,y+h*0.12,w*0.38,w*0.2,0,Math.PI,0);ctx.fill();
+
+  // Ojos
+  ctx.fillStyle='#1a0800';
+  ctx.fillRect(x+w*0.38,y+h*0.15,w*0.1,w*0.08);
+  ctx.fillRect(x+w*0.55,y+h*0.15,w*0.1,w*0.08);
+
+  // Expresión asustada si invulnerable
+  if(invuln>0){
+    ctx.strokeStyle='#000';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x+w/2,y+h*0.2,3,0,Math.PI,true);ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawHijo(x,y,w,h,anim){
+  const bob=Math.sin(anim)*3;
+  // Aura pulsante (indicador)
+  ctx.fillStyle=`rgba(255,220,100,${0.1+Math.sin(anim*2)*0.08})`;
+  ctx.beginPath();ctx.arc(x+w/2,y+h/2+bob,35,0,Math.PI*2);ctx.fill();
+
+  // Niño
+  ctx.fillStyle='#5a3015';
+  ctx.beginPath();ctx.arc(x+w/2,y+h*0.25+bob,w*0.45,0,Math.PI*2);ctx.fill();
+  ctx.fillRect(x+w*0.15,y+h*0.45+bob,w*0.7,h*0.45);
+
+  // Cara
+  ctx.fillStyle='#c8956a';
+  ctx.beginPath();ctx.arc(x+w/2,y+h*0.23+bob,w*0.35,0,Math.PI*2);ctx.fill();
+  // Ojos llorando
+  ctx.fillStyle='#00f';ctx.beginPath();
+  ctx.arc(x+w*0.38,y+h*0.22+bob,2,0,Math.PI*2);
+  ctx.arc(x+w*0.62,y+h*0.22+bob,2,0,Math.PI*2);ctx.fill();
+  // Lágrimas
+  ctx.fillStyle='rgba(100,150,255,0.8)';
+  ctx.fillRect(x+w*0.37,y+h*0.25+bob,2,4);
+  ctx.fillRect(x+w*0.61,y+h*0.25+bob,2,4);
+
+  // Emoji indicador
+  ctx.font=`${16*ESC}px serif`;
+  ctx.textAlign='center';
+  ctx.fillText('👦',x+w/2,y+bob-8);
+}
+
+function drawPuerta(x,y,w,h){
+  // Marco
+  ctx.fillStyle='#2a1500';
+  ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='#886633';ctx.lineWidth=3;
+  ctx.strokeRect(x+2,y+2,w-4,h-4);
+
+  // Puerta
+  ctx.fillStyle='#3a2010';
+  ctx.fillRect(x+w*0.1,y+h*0.05,w*0.8,h*0.9);
+
+  // Luz dorada (exterior)
+  const glow=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w);
+  glow.addColorStop(0,'rgba(255,220,80,0.3)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.beginPath();
+  ctx.arc(x+w/2,y+h/2,w,0,Math.PI*2);ctx.fill();
+
+  // Texto
+  ctx.fillStyle='#ffd700';
+  ctx.font=`bold ${clamp(10,1.5,18)}px 'Cinzel',serif`;
+  ctx.textAlign='center';
+  if(fase===1) ctx.fillText('🚪 ¡SALIDA!',x+w/2,y+h+14);
+  else ctx.fillText('🚪 Salida',x+w/2,y+h+14);
+}
+
+function drawCaballero(){
+  const x=caballero.x,y=caballero.y,w=caballero.w,h=caballero.h;
+  const t=Date.now()/300;
+  const miraDer=caballero.vx>=0;
+
+  ctx.save();
+  if(!miraDer){ctx.translate(x+w/2,y+h/2);ctx.scale(-1,1);ctx.translate(-(x+w/2),-(y+h/2));}
+
+  if(caballero.estado==='asustado'){
+    ctx.globalAlpha=0.6+Math.sin(t*5)*0.3;
+  }
+
+  // Capa negra ondulante
+  ctx.fillStyle='#0a0a0a';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.05,y+h*0.28);
+  ctx.lineTo(x+w*0.95,y+h*0.28);
+  ctx.lineTo(x+w+Math.sin(t)*6,y+h);
+  ctx.lineTo(x-Math.sin(t)*6,y+h);
+  ctx.closePath();ctx.fill();
+
+  // Cuerpo
+  ctx.fillStyle='#111';
+  ctx.fillRect(x+w*0.18,y+h*0.28,w*0.64,h*0.52);
+
+  // Sombrero de copa
+  ctx.fillStyle='#0d0d0d';
+  ctx.fillRect(x+w*0.2,y+h*0.08,w*0.6,h*0.22);
+  ctx.fillRect(x+w*0.08,y+h*0.26,w*0.84,h*0.07);
+
+  // Cabeza
+  ctx.fillStyle='#1a1a1a';
+  ctx.fillRect(x+w*0.25,y+h*0.14,w*0.5,h*0.16);
+
+  // Ojos (rojos brillantes)
+  ctx.fillStyle='#ff0000';
+  ctx.shadowColor='#ff0000';ctx.shadowBlur=15;
+  ctx.beginPath();
+  ctx.arc(x+w*0.36,y+h*0.2,3.5,0,Math.PI*2);
+  ctx.arc(x+w*0.64,y+h*0.2,3.5,0,Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Boca (sonrisa maliciosa)
+  ctx.strokeStyle='#cc0000';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.arc(x+w/2,y+h*0.23,w*0.12,0.1,Math.PI-0.1);ctx.stroke();
+
+  // Espuelas de oro en pies
+  const eTime=Date.now()/150;
+  [[x+w*0.28,y+h*0.88],[x+w*0.72,y+h*0.88]].forEach(([ex,ey])=>{
+    ctx.fillStyle='#ffd700';
+    ctx.shadowColor='#ffd700';ctx.shadowBlur=10;
+    for(let i=0;i<6;i++){
+      const ang=(i/6)*Math.PI*2+eTime;
+      ctx.beginPath();
+      ctx.moveTo(ex,ey);
+      ctx.lineTo(ex+Math.cos(ang)*7*ESC,ey+Math.sin(ang)*7*ESC);
+      ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(ex,ey,3*ESC,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+  });
+
+  ctx.globalAlpha=1;
+  ctx.restore();
+
+  // "¡Que se te hunda!" sobre él si persigue
+  if(caballero.estado==='persiguiendo' && Math.floor(Date.now()/1000)%3===0){
+    ctx.fillStyle='rgba(255,50,0,0.85)';
+    ctx.font=`bold ${clamp(10,1.5,14)}px 'IM Fell English',serif`;
+    ctx.textAlign='center';
+    ctx.fillText('¡Que se te hunda!',x+w/2,y-8);
+  }
+}
+
+function drawCandelabro(x,y,h){
+  ctx.strokeStyle='#6a4a1a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+h*0.5);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x-8,y+h*0.3);ctx.lineTo(x+8,y+h*0.3);ctx.stroke();
+  // Velas
+  [x-8,x,x+8].forEach(cx=>{
+    ctx.fillStyle='#e8e0c0';ctx.fillRect(cx-1.5,y+h*0.1,3,h*0.18);
+    // Llama
+    ctx.fillStyle=`rgba(255,${150+Math.sin(Date.now()/150)*80},30,0.9)`;
+    ctx.beginPath();ctx.ellipse(cx,y+h*0.08,2,4,0,0,Math.PI*2);ctx.fill();
+  });
+}
+
+/* ====================================================
+   UTILIDADES
+   ==================================================== */
+function colRect(a,b){
+  return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;
+}
+function distancia(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
+function addParticula(x,y,color,sube){
+  const v=sube?-1:1;
+  for(let i=0;i<6;i++){
+    particulas.push({x,y,vx:(Math.random()-.5)*3,vy:v*(Math.random()*3),color,r:4,maxVida:40,vida:40});
+  }
+}
+function addChispa(x,y){
+  chispas.push({x,y,vx:(Math.random()-.5)*3,vy:-Math.random()*2-1,color:Math.random()<0.5?'#ffd700':'#ff6600',vida:20});
+}
+function clamp(base,mult,max){return Math.min(max,base*ESC*mult);}
+
+/* ====================================================
+   TERMINAR
+   ==================================================== */
+function terminar(ganaste, razon){
+  juegoActivo=false;
+  clearInterval(timerInter);
+  clearInterval(window._hundir);
+  cancelAnimationFrame(animId);
+  document.getElementById('juego-container').style.display='none';
+  document.getElementById('pantalla-fin').style.display='flex';
+
+  const tit=document.getElementById('fin-titulo');
+  const tex=document.getElementById('fin-texto');
+  const mor=document.getElementById('fin-morale');
+
+  if(ganaste){
+    tit.className='fin-titulo v';
+    tit.textContent='🙏 ¡ESCAPASTE CON TU HIJO! 🙏';
+    tex.textContent=`"En ese instante, el suelo del salón se abrió. Todos los presentes fueron tragados por la tierra: los invitados, las jóvenes piuranas… todos menos la sirvienta y su hijo, quienes fueron protegidos por su fe."`;
+    mor.textContent=`✨ Lograste lo que la historia dice: solo la fe y el amor de una madre vencieron al diablo con espuelas de oro.`;
+  } else if(razon==='vidas'){
+    tit.className='fin-titulo d';
+    tit.textContent='💀 EL CABALLERO TE ATRAPÓ';
+    tex.textContent=`"Las espuelas de oro del caballero brillaban con cada paso... Tin, tin, tin. Nadie que se dejó deslumbrar por la riqueza fácil logró escapar aquella noche maldita."`;
+    mor.textContent=`💡 Recuerda: presiona R para rezar y alejar al Caballero cuando esté cerca.`;
+  } else if(razon==='tiempo'){
+    tit.className='fin-titulo d';
+    tit.textContent='🔥 EL SALÓN SE HUNDIÓ';
+    tex.textContent=`"¡Que se te hunda, que se te hunda! — gritó el caballero. El suelo se abrió y el humo espeso del infierno envolvió todo el salón de baile."`;
+    mor.textContent=`💡 Muévete más rápido. Encuentra al niño y llévalo a la puerta antes de que el salón colapse.`;
+  } else {
+    tit.className='fin-titulo d';
+    tit.textContent='😱 PERDISTE LA FE';
+    tex.textContent=`"Solo la fe protegía a la sirvienta... sin ella, el caballero demoníaco no tenía obstáculo. El diablo se presentó aquella noche y la vanidad abrió la puerta al castigo."`;
+    mor.textContent=`💡 Reza (tecla R) regularmente para mantener tu fe y alejar al Caballero.`;
+  }
+}
+
+/* ====================================================
+   LOOP
+   ==================================================== */
+function loop(){
+  update();
+  draw();
+  animId=requestAnimationFrame(loop);
+}
+
+window.addEventListener('resize',()=>{ resize(); });
+resize();
+</script>
+</body>
+</html>

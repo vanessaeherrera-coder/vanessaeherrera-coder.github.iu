@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Corazón del Príncipe — Samka Chancha</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --oro: #C9A84C;
+    --oro-claro: #F0D080;
+    --oscuro: #0D0A05;
+    --cafe-profundo: #1A1008;
+    --cafe-medio: #2E1C08;
+    --rojo-inca: #8B1A1A;
+    --rojo-suave: #A0522D;
+    --piedra: #3D2B1A;
+    --texto: #E8D5A3;
+    --texto-suave: #B89860;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--oscuro);
+    color: var(--texto);
+    font-family: 'Crimson Text', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ——— PANTALLA DE INICIO ——— */
+  #pantalla-inicio {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, #1A1008 0%, #0D0A05 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    transition: opacity 0.8s;
+  }
+
+  .serpiente-svg {
+    width: 120px; margin-bottom: 20px;
+    animation: flotar 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px #C9A84C88);
+  }
+
+  @keyframes flotar {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  #pantalla-inicio h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--oro);
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 30px #C9A84C55;
+    margin-bottom: 10px;
+  }
+
+  #pantalla-inicio .subtitulo {
+    font-size: 1.1rem;
+    color: var(--texto-suave);
+    font-style: italic;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  #pantalla-inicio .autor {
+    font-size: 0.85rem;
+    color: #7a6040;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .btn-inicio {
+    background: linear-gradient(135deg, #8B1A1A, #C9A84C);
+    border: 2px solid var(--oro);
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    padding: 14px 40px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  }
+  .btn-inicio:hover {
+    background: linear-gradient(135deg, #C9A84C, #8B1A1A);
+    box-shadow: 0 0 25px #C9A84C66;
+    transform: scale(1.05);
+  }
+
+  /* ——— BARRA DE PUREZA ——— */
+  #hud {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 12px 20px;
+    background: linear-gradient(to bottom, rgba(13,10,5,0.97), transparent);
+    display: flex; align-items: center; gap: 14px;
+    z-index: 50;
+  }
+
+  #hud .hud-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--oro);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  #barra-pureza-bg {
+    flex: 1; height: 8px;
+    background: #2E1C08;
+    border: 1px solid #4a3010;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  #barra-pureza-fill {
+    height: 100%;
+    background: linear-gradient(to right, #8B1A1A, #C9A84C, #F0D080);
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    width: 50%;
+  }
+
+  #pureza-valor {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--oro-claro);
+    width: 40px;
+    text-align: right;
+  }
+
+  /* ——— ESCENA ——— */
+  #juego {
+    display: none;
+    min-height: 100vh;
+    padding-top: 50px;
+  }
+
+  .escena {
+    display: none;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+  .escena.activa { display: block; animation: aparecer 0.6s ease; }
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Encabezado de lugar */
+  .lugar {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--texto-suave);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-left: 3px solid var(--rojo-inca);
+    padding-left: 10px;
+    margin-bottom: 18px;
+  }
+
+  /* Ilustración de escena */
+  .ilustracion {
+    width: 100%;
+    border-radius: 2px;
+    margin-bottom: 22px;
+    border: 1px solid #3a2410;
+    background: var(--cafe-profundo);
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Personaje hablando */
+  .hablante {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--oro);
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+
+  /* Caja de texto narrativo */
+  .narrativa {
+    background: rgba(20,12,4,0.7);
+    border: 1px solid #3a2410;
+    border-left: 3px solid var(--rojo-inca);
+    padding: 18px 22px;
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--texto);
+    margin-bottom: 22px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Diálogo */
+  .dialogo {
+    background: rgba(30,18,6,0.85);
+    border: 1px solid var(--oro);
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--oro-claro);
+    font-style: italic;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .dialogo::before {
+    content: '"';
+    font-size: 3rem;
+    color: var(--rojo-inca);
+    position: absolute;
+    top: -10px; left: 10px;
+    font-style: normal;
+    line-height: 1;
+  }
+
+  /* Decisiones */
+  .decisiones-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--texto-suave);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .opciones {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .opcion {
+    background: linear-gradient(90deg, rgba(46,28,8,0.9), rgba(26,16,4,0.9));
+    border: 1px solid #4a3010;
+    border-left: 4px solid var(--rojo-inca);
+    padding: 14px 18px;
+    cursor: pointer;
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    color: var(--texto);
+    text-align: left;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opcion::after {
+    content: '▶';
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--rojo-inca);
+    opacity: 0;
+    transition: opacity 0.2s, right 0.2s;
+  }
+
+  .opcion:hover {
+    border-left-color: var(--oro);
+    background: linear-gradient(90deg, rgba(80,50,15,0.9), rgba(46,28,8,0.9));
+    color: var(--oro-claro);
+    padding-right: 40px;
+  }
+  .opcion:hover::after { opacity: 1; right: 12px; }
+
+  .opcion .efecto {
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+    display: block;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Feedback tras decisión */
+  .feedback {
+    display: none;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--oro);
+    padding: 14px 18px;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: var(--texto-suave);
+    font-style: italic;
+    margin-bottom: 18px;
+    animation: aparecer 0.4s ease;
+  }
+
+  .btn-continuar {
+    background: transparent;
+    border: 2px solid var(--oro);
+    color: var(--oro);
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 6px;
+  }
+  .btn-continuar:hover {
+    background: var(--oro);
+    color: var(--oscuro);
+  }
+
+  /* ——— PANTALLA FINAL ——— */
+  #pantalla-final {
+    display: none;
+    max-width: 680px;
+    margin: 80px auto 60px;
+    padding: 20px;
+    text-align: center;
+    animation: aparecer 0.8s ease;
+  }
+
+  #pantalla-final .titulo-fin {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--oro);
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px #C9A84C55;
+  }
+
+  #pantalla-final .descripcion-fin {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--texto);
+    margin-bottom: 24px;
+    background: rgba(20,12,4,0.7);
+    border: 1px solid #4a3010;
+    padding: 20px;
+    border-radius: 4px;
+  }
+
+  .moraleja-box {
+    border: 1px solid var(--oro);
+    padding: 20px;
+    margin-bottom: 28px;
+    background: rgba(30,18,6,0.7);
+  }
+
+  .moraleja-box .m-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--rojo-inca);
+    letter-spacing: 0.2em;
+    margin-bottom: 10px;
+  }
+
+  .moraleja-box p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    font-style: italic;
+    color: var(--texto-suave);
+  }
+
+  #puntaje-final {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--oro-claro);
+    margin-bottom: 24px;
+  }
+
+  .btn-reiniciar {
+    background: var(--rojo-inca);
+    border: 2px solid var(--oro);
+    color: var(--oro-claro);
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    padding: 12px 32px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+  }
+  .btn-reiniciar:hover {
+    background: var(--oro);
+    color: var(--oscuro);
+  }
+
+  /* Divisor dorado */
+  .divisor {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--oro), transparent);
+    margin: 24px 0;
+  }
+
+  /* SVG ilustraciones de escena */
+  .svg-escena { width: 100%; height: 220px; }
+
+  /* Partículas flotantes */
+  .particula {
+    position: fixed;
+    width: 2px; height: 2px;
+    background: var(--oro);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: subir linear infinite;
+    opacity: 0;
+  }
+  @keyframes subir {
+    0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Partículas ambientales -->
+<div id="particulas"></div>
+
+<!-- ===== PANTALLA DE INICIO ===== -->
+<div id="pantalla-inicio">
+  <svg class="serpiente-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 50 10 C 80 10 90 30 75 45 C 60 60 40 55 30 70 C 20 85 35 95 50 90"
+          fill="none" stroke="#C9A84C" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="50" cy="10" r="6" fill="#8B1A1A"/>
+    <circle cx="47" cy="8" r="1.5" fill="#F0D080"/>
+    <circle cx="53" cy="8" r="1.5" fill="#F0D080"/>
+    <path d="M 48 14 L 50 18 L 52 14" fill="#8B1A1A"/>
+  </svg>
+
+  <h1>EL CORAZÓN DEL PRÍNCIPE</h1>
+  <p class="subtitulo">La Leyenda de Samka Chancha</p>
+  <p class="autor">Un juego de decisiones · Imperio Inca</p>
+  <div class="divisor"></div>
+  <p style="font-size:0.95rem; color:#7a6040; max-width:420px; text-align:center; margin-bottom:30px; line-height:1.6;">
+    Tú eres Atahualpa, joven príncipe inca. Cada decisión que tomes revelará si tu corazón es puro.<br>
+    La víbora de Samka Chancha sabrá la verdad.
+  </p>
+  <button class="btn-inicio" onclick="iniciarJuego()">▶ COMENZAR</button>
+</div>
+
+<!-- ===== HUD ===== -->
+<div id="hud" style="display:none;">
+  <span class="hud-label">PUREZA DE CORAZÓN</span>
+  <div id="barra-pureza-bg"><div id="barra-pureza-fill"></div></div>
+  <span id="pureza-valor">50</span>
+</div>
+
+<!-- ===== JUEGO ===== -->
+<div id="juego">
+
+  <!-- ESCENA 1: Las tierras altas -->
+  <div class="escena" id="escena-1">
+    <div class="lugar">📍 Las Tierras Altas del Imperio Inca</div>
+
+    <div class="ilustracion">
+      <svg class="svg-escena" viewBox="0 0 780 220">
+        <!-- Cielo -->
+        <defs>
+          <linearGradient id="cielo1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0D1A2E"/>
+            <stop offset="100%" stop-color="#1A2D1A"/>
+          </linearGradient>
+        </defs>
+        <rect width="780" height="220" fill="url(#cielo1)"/>
+        <!-- Montañas -->
+        <polygon points="0,220 120,80 240,220" fill="#1a3020"/>
+        <polygon points="100,220 280,50 460,220" fill="#142A18"/>
+        <polygon points="350,220 520,70 690,220" fill="#1a3020"/>
+        <polygon points="600,220 720,90 780,220" fill="#142A18"/>
+        <!-- Sol/Luna dorado -->
+        <circle cx="390" cy="55" r="28" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.7"/>
+        <circle cx="390" cy="55" r="18" fill="#C9A84C" opacity="0.5"/>
+        <!-- Estrellas -->
+        <circle cx="80" cy="30" r="1.5" fill="#F0D080" opacity="0.8"/>
+        <circle cx="200" cy="20" r="1" fill="#F0D080" opacity="0.6"/>
+        <circle cx="600" cy="25" r="1.5" fill="#F0D080" opacity="0.8"/>
+        <circle cx="700" cy="15" r="1" fill="#F0D080" opacity="0.6"/>
+        <!-- Atahualpa (silueta) -->
+        <ellipse cx="320" cy="180" rx="18" ry="28" fill="#8B1A1A"/>
+        <circle cx="320" cy="148" r="13" fill="#A0522D"/>
+        <!-- Corona -->
+        <rect x="312" y="135" width="16" height="6" fill="#C9A84C"/>
+        <rect x="316" y="130" width="4" height="6" fill="#C9A84C"/>
+        <!-- Maestro Quishpe (silueta) -->
+        <ellipse cx="420" cy="182" rx="15" ry="26" fill="#4a3020"/>
+        <circle cx="420" cy="153" r="12" fill="#6a4830"/>
+        <!-- Texto interno -->
+        <text x="390" y="210" text-anchor="middle" fill="#C9A84C" font-size="11" font-family="serif" opacity="0.7">Atahualpa y su maestro Quishpe</text>
+      </svg>
+    </div>
+
+    <div class="narrativa">
+      Hace muchos años, en las tierras altas del Imperio Inca, vivías tú: <strong>Atahualpa</strong>, joven príncipe valiente, curioso y con muchas ganas de aprender. Tu maestro, el sabio <strong>Quishpe</strong>, te enseñaba cada día sobre el mundo, la historia y cómo ser un buen gobernante.
+    </div>
+
+    <div class="hablante">QUISHPE — tu maestro</div>
+    <div class="dialogo">
+      Hoy iremos a un lugar especial, Atahualpa. Necesitas conocer no solo las cosas bonitas del mundo, sino también aquellas que enseñan dolor y respeto.
+    </div>
+
+    <div class="decisiones-titulo">— ¿CÓMO RESPONDES? —</div>
+    <div class="opciones">
+      <button class="opcion" onclick="decidir(1, 'A', +20, '¡Bien! Tu disposición a aprender muestra respeto y humildad.', 2)">
+        "Estoy listo, maestro. Confío en tu sabiduría."
+        <span class="efecto">✦ Muestra humildad y respeto por el saber</span>
+      </button>
+      <button class="opcion" onclick="decidir(1, 'B', -10, 'El miedo es natural, pero un futuro gobernante debe dominar sus temores.', 2)">
+        "No sé si quiero ir. Los lugares difíciles me dan miedo."
+        <span class="efecto">✦ La duda te hace dudar de tu propio valor</span>
+      </button>
+      <button class="opcion" onclick="decidir(1, 'C', +5, 'La curiosidad es buena, pero recuerda que un líder también debe tener paciencia.', 2)">
+        "¿A qué lugar? ¡Cuéntame todo ahora, maestro!"
+        <span class="efecto">✦ La curiosidad puede ser impulsiva</span>
+      </button>
+    </div>
+    <div class="feedback" id="fb-1"></div>
+    <button class="btn-continuar" id="btn-c1" style="display:none;" onclick="irA(2)">Continuar la historia ▶</button>
+  </div>
+
+  <!-- ESCENA 2: Camino al volcán Pichincha -->
+  <div class="escena" id="escena-2">
+    <div class="lugar">📍 Ruta a las Faldas del Volcán Pichincha — Cerca de Quitwa</div>
+
+    <div class="ilustracion">
+      <svg class="svg-escena" viewBox="0 0 780 220">
+        <defs>
+          <linearGradient id="cielo2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1A0A00"/>
+            <stop offset="100%" stop-color="#2D1A08"/>
+          </linearGradient>
+        </defs>
+        <rect width="780" height="220" fill="url(#cielo2)"/>
+        <!-- Volcán Pichincha -->
+        <polygon points="250,220 390,30 530,220" fill="#2a1a08"/>
+        <polygon points="360,80 390,30 420,80 400,75 390,50 380,75" fill="#C9A84C" opacity="0.3"/>
+        <!-- Camino de piedra -->
+        <path d="M 0,200 Q 390,150 780,200" fill="none" stroke="#4a3010" stroke-width="8"/>
+        <path d="M 0,200 Q 390,150 780,200" fill="none" stroke="#2E1C08" stroke-width="4"/>
+        <!-- Humo del volcán -->
+        <ellipse cx="390" cy="18" rx="20" ry="10" fill="#3a2a18" opacity="0.5"/>
+        <ellipse cx="388" cy="8" rx="14" ry="7" fill="#4a3a28" opacity="0.4"/>
+        <!-- Árboles andinos -->
+        <rect x="80" y="155" width="6" height="40" fill="#3a2a10"/>
+        <ellipse cx="83" cy="148" rx="18" ry="22" fill="#1a3a10"/>
+        <rect x="650" y="150" width="6" height="42" fill="#3a2a10"/>
+        <ellipse cx="653" cy="142" rx="18" ry="22" fill="#1a3a10"/>
+        <!-- Siluetas caminando -->
+        <ellipse cx="340" cy="175" rx="12" ry="22" fill="#8B1A1A"/>
+        <circle cx="340" cy="150" r="10" fill="#A0522D"/>
+        <rect x="334" y="140" width="12" height="5" fill="#C9A84C"/>
+        <ellipse cx="390" cy="177" rx="11" ry="20" fill="#4a3020"/>
+        <circle cx="390" cy="155" r="9" fill="#6a4830"/>
+        <text x="390" y="212" text-anchor="middle" fill="#C9A84C" font-size="11" font-family="serif" opacity="0.7">Camino hacia Samka Chancha</text>
+      </svg>
+    </div>
+
+    <div class="narrativa">
+      Durante el camino, cruzas bosques y senderos de piedra hacia las faldas del volcán Pichincha. Quishpe camina en silencio. De pronto, ves a un anciano caído al borde del sendero, exhausto y con hambre.
+    </div>
+
+    <div class="decisiones-titulo">— ¿QUÉ DECIDES HACER? —</div>
+    <div class="opciones">
+      <button class="opcion" onclick="decidir(2, 'A', +20, 'Excelente. Ayudar al débil sin esperar nada revela un corazón generoso y justo.', 3)">
+        Te detienes, le ofreces agua y alimento, y le ayudas a ponerse de pie.
+        <span class="efecto">✦ Muestra generosidad y empatía</span>
+      </button>
+      <button class="opcion" onclick="decidir(2, 'B', -15, 'Un gobernante que ignora el sufrimiento de su pueblo no está preparado para liderar.', 3)">
+        Sigues caminando. Tienes prisa y el anciano no es tu responsabilidad.
+        <span class="efecto">✦ La indiferencia es señal de corazón cerrado</span>
+      </button>
+      <button class="opcion" onclick="decidir(2, 'C', +8, 'Pedir ayuda también es un acto de responsabilidad, aunque hubieras podido actuar tú mismo.', 3)">
+        Le dices a Quishpe que alguien debe venir a ayudar al anciano, pero no te detienes.
+        <span class="efecto">✦ Media solución: reconoces el problema pero evitas actuar</span>
+      </button>
+    </div>
+    <div class="feedback" id="fb-2"></div>
+    <button class="btn-continuar" id="btn-c2" style="display:none;" onclick="irA(3)">Continuar la historia ▶</button>
+  </div>
+
+  <!-- ESCENA 3: Llegada a Samka Chancha -->
+  <div class="escena" id="escena-3">
+    <div class="lugar">📍 La Cárcel Samka Chancha — Faldas del Pichincha</div>
+
+    <div class="ilustracion">
+      <svg class="svg-escena" viewBox="0 0 780 220">
+        <defs>
+          <linearGradient id="cieloCarcel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#050305"/>
+            <stop offset="100%" stop-color="#0D0A05"/>
+          </linearGradient>
+          <radialGradient id="luzPozo" cx="50%" cy="60%" r="40%">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#0D0A05" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="780" height="220" fill="url(#cieloCarcel)"/>
+        <!-- Muros de piedra -->
+        <rect x="0" y="80" width="780" height="140" fill="#1a1208"/>
+        <!-- Bloques de piedra -->
+        <rect x="0" y="80" width="120" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="120" y="80" width="130" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="250" y="80" width="140" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="60" y="110" width="130" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="190" y="110" width="120" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="310" y="110" width="140" height="30" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <!-- El pozo -->
+        <ellipse cx="390" cy="175" rx="60" ry="20" fill="#090705"/>
+        <ellipse cx="390" cy="172" rx="60" ry="20" fill="none" stroke="#4a3010" stroke-width="3"/>
+        <rect width="780" height="220" fill="url(#luzPozo)"/>
+        <!-- Cuerda y polea -->
+        <line x1="390" y1="90" x2="390" y2="155" stroke="#8B6030" stroke-width="3"/>
+        <circle cx="390" cy="88" r="8" fill="none" stroke="#C9A84C" stroke-width="2"/>
+        <!-- Serpiente en el pozo -->
+        <path d="M 360,175 Q 375,165 390,170 Q 405,175 418,165" fill="none" stroke="#8B1A1A" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="420" cy="163" r="5" fill="#8B1A1A"/>
+        <circle cx="418" cy="161" r="1.5" fill="#F0D080"/>
+        <circle cx="422" cy="161" r="1.5" fill="#F0D080"/>
+        <!-- Antorcha -->
+        <rect x="120" y="100" width="6" height="30" fill="#5a3820"/>
+        <ellipse cx="123" cy="98" rx="8" ry="12" fill="#C9A84C" opacity="0.7"/>
+        <ellipse cx="123" cy="96" rx="5" ry="8" fill="#F0D080" opacity="0.6"/>
+        <text x="390" y="212" text-anchor="middle" fill="#8B1A1A" font-size="12" font-family="serif" opacity="0.9">La cárcel Samka Chancha — el pozo de la víbora</text>
+      </svg>
+    </div>
+
+    <div class="narrativa">
+      Llegas a <strong>Samka Chancha</strong>, una cárcel oscura construida por el emperador <strong>Huayna Cápac</strong> en las faldas del volcán Pichincha, cerca de la ciudad de Quitwa. En ese lugar se castigaba a los traidores. Dentro del pozo vive una víbora venenosa que ataca solo a las personas malas: mentirosas, cobardes o crueles.
+    </div>
+
+    <div class="hablante">QUISHPE — tu maestro</div>
+    <div class="dialogo">
+      Porque un futuro gobernante debe conocer el dolor de su pueblo y también probar su valor.
+    </div>
+
+    <p style="font-size:1rem; color:var(--texto-suave); margin-bottom:18px;">Miras el pozo oscuro. El sonido de la víbora llega desde abajo. Quishpe te observa en silencio, esperando tu reacción.</p>
+
+    <div class="decisiones-titulo">— ¿QUÉ HACES? —</div>
+    <div class="opciones">
+      <button class="opcion" onclick="decidir(3, 'A', +25, 'La valentía verdadera es actuar a pesar del miedo. Atahualpa demostró ser valiente.', 4)">
+        "¡Átame con un lazo y bájame! Así sabrás si soy digno de gobernar."
+        <span class="efecto">✦ Valentía y decisión — igual que en la leyenda</span>
+      </button>
+      <button class="opcion" onclick="decidir(3, 'B', -20, 'Rechazar la prueba es señal de cobardía. El maestro enseña que el dolor y el respeto forman al líder.', 4)">
+        "No bajaré. Es demasiado peligroso y no veo razón para hacerlo."
+        <span class="efecto">✦ La cobardía aleja al liderazgo justo</span>
+      </button>
+      <button class="opcion" onclick="decidir(3, 'C', 0, 'Pedir más tiempo es comprensible, pero la prueba del corazón no espera eternamente.', 4)">
+        "Necesito un momento para pensar antes de decidir."
+        <span class="efecto">✦ La prudencia puede ser sabiduría... o evasión</span>
+      </button>
+    </div>
+    <div class="feedback" id="fb-3"></div>
+    <button class="btn-continuar" id="btn-c3" style="display:none;" onclick="irA(4)">Continuar la historia ▶</button>
+  </div>
+
+  <!-- ESCENA 4: Dentro del pozo -->
+  <div class="escena" id="escena-4">
+    <div class="lugar">📍 Dentro del Pozo — Samka Chancha</div>
+
+    <div class="ilustracion">
+      <svg class="svg-escena" viewBox="0 0 780 220">
+        <defs>
+          <radialGradient id="luzArriba" cx="50%" cy="0%" r="50%">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#050305" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="780" height="220" fill="#050305"/>
+        <rect width="780" height="220" fill="url(#luzArriba)"/>
+        <!-- Paredes del pozo -->
+        <rect x="0" y="0" width="130" height="220" fill="#12100a"/>
+        <rect x="650" y="0" width="130" height="220" fill="#12100a"/>
+        <!-- Bloques de piedra de pared -->
+        <rect x="0" y="0" width="130" height="40" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="0" y="40" width="130" height="40" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="0" y="80" width="130" height="40" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="650" y="0" width="130" height="40" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <rect x="650" y="40" width="130" height="40" fill="none" stroke="#2a1f10" stroke-width="1"/>
+        <!-- Atahualpa en el pozo -->
+        <ellipse cx="350" cy="180" rx="22" ry="30" fill="#8B1A1A"/>
+        <circle cx="350" cy="148" r="15" fill="#A0522D"/>
+        <rect x="342" y="133" width="16" height="7" fill="#C9A84C"/>
+        <!-- Cuerda -->
+        <line x1="350" y1="0" x2="350" y2="135" stroke="#8B6030" stroke-width="4"/>
+        <!-- La víbora -->
+        <path d="M 430,195 Q 420,175 400,172 Q 380,169 365,175 Q 355,180 350,190" fill="none" stroke="#8B1A1A" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="432" cy="197" r="9" fill="#8B1A1A"/>
+        <circle cx="429" cy="194" r="2.5" fill="#F0D080"/>
+        <circle cx="435" cy="194" r="2.5" fill="#F0D080"/>
+        <path d="M 430,205 L 434,210 L 428,210" fill="#8B1A1A"/>
+        <!-- Luz desde arriba -->
+        <ellipse cx="390" cy="5" rx="80" ry="15" fill="#C9A84C" opacity="0.4"/>
+        <text x="390" y="215" text-anchor="middle" fill="#C9A84C" font-size="11" font-family="serif" opacity="0.8">La víbora se acerca a Atahualpa...</text>
+      </svg>
+    </div>
+
+    <div class="narrativa">
+      Bajas lentamente al pozo oscuro. La única luz viene desde arriba. Escuchas el deslizarse de escamas sobre la piedra. La víbora se acerca. Tu corazón late con fuerza. En ese momento recuerdas las palabras de Quishpe.
+    </div>
+
+    <p style="font-size:1rem; color:var(--texto-suave); margin-bottom:18px;">La víbora está frente a ti. Sus ojos dorados te estudian. Solo tú sabes lo que hay en tu corazón en este momento.</p>
+
+    <div class="decisiones-titulo">— ¿QUÉ PIENSAS EN ESE INSTANTE? —</div>
+    <div class="opciones">
+      <button class="opcion" onclick="decidir(4, 'A', +20, 'Pensar en tu pueblo antes que en ti mismo es la marca de un verdadero gobernante.', 5)">
+        "Debo ser valiente. Si tengo miedo, lo acepto, pero no huiré. Lo hago por mi pueblo."
+        <span class="efecto">✦ Valentía honesta y deber como gobernante</span>
+      </button>
+      <button class="opcion" onclick="decidir(4, 'B', +10, 'La confianza en el maestro es positiva, pero el valor debe venir también de ti mismo.', 5)">
+        "Confío en que Quishpe no me pondría en peligro real. Todo estará bien."
+        <span class="efecto">✦ Confianza en el maestro</span>
+      </button>
+      <button class="opcion" onclick="decidir(4, 'C', -15, 'El engaño, incluso en el pensamiento, es exactamente lo que la víbora detecta.', 5)">
+        "Solo debo aparentar calma. Si finjo valentía, la víbora no me atacará."
+        <span class="efecto">✦ La mentira interior es lo que la víbora juzga</span>
+      </button>
+    </div>
+    <div class="feedback" id="fb-4"></div>
+    <button class="btn-continuar" id="btn-c4" style="display:none;" onclick="irA(5)">Continuar la historia ▶</button>
+  </div>
+
+  <!-- ESCENA 5: La decisión como emperador -->
+  <div class="escena" id="escena-5">
+    <div class="lugar">📍 Años Después — El Imperio, ya siendo Emperador</div>
+
+    <div class="ilustracion">
+      <svg class="svg-escena" viewBox="0 0 780 220">
+        <defs>
+          <linearGradient id="cieloEmp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0D1A0D"/>
+            <stop offset="100%" stop-color="#1A2A0A"/>
+          </linearGradient>
+        </defs>
+        <rect width="780" height="220" fill="url(#cieloEmp)"/>
+        <!-- Arquitectura inca -->
+        <rect x="150" y="120" width="180" height="100" fill="#1a1a10"/>
+        <rect x="160" y="110" width="160" height="20" fill="#2a2a18"/>
+        <rect x="420" y="130" width="200" height="90" fill="#1a1a10"/>
+        <rect x="430" y="120" width="180" height="20" fill="#2a2a18"/>
+        <!-- El pozo tapado -->
+        <ellipse cx="390" cy="185" rx="55" ry="18" fill="#2a1a0a"/>
+        <ellipse cx="390" cy="183" rx="55" ry="18" fill="#3a2a14"/>
+        <line x1="335" y1="183" x2="445" y2="183" stroke="#4a3a1a" stroke-width="2"/>
+        <!-- Atahualpa Emperador -->
+        <ellipse cx="390" cy="165" rx="25" ry="35" fill="#8B1A1A"/>
+        <circle cx="390" cy="128" r="18" fill="#A0522D"/>
+        <!-- Corona imperial -->
+        <rect x="380" y="110" width="20" height="10" fill="#C9A84C"/>
+        <rect x="382" y="103" width="5" height="8" fill="#C9A84C"/>
+        <rect x="390" y="101" width="5" height="10" fill="#C9A84C"/>
+        <rect x="398" y="103" width="5" height="8" fill="#C9A84C"/>
+        <!-- Obreros tapando el pozo -->
+        <ellipse cx="310" cy="188" rx="12" ry="20" fill="#6a4820"/>
+        <circle cx="310" cy="166" r="10" fill="#8a6040"/>
+        <ellipse cx="460" cy="188" rx="12" ry="20" fill="#6a4820"/>
+        <circle cx="460" cy="166" r="10" fill="#8a6040"/>
+        <text x="390" y="215" text-anchor="middle" fill="#C9A84C" font-size="11" font-family="serif" opacity="0.8">El Emperador manda tapar el pozo de Samka Chancha</text>
+      </svg>
+    </div>
+
+    <div class="narrativa">
+      Pasaron los años. Te convertiste en <strong>Emperador</strong>. Ahora debes tomar una decisión sobre Samka Chancha. Recuerdas lo que viviste en ese pozo oscuro y lo que aprendiste: <em>"el miedo y el dolor no hacen mejor a nadie."</em>
+    </div>
+
+    <p style="font-size:1rem; color:var(--texto-suave); margin-bottom:18px;">Como emperador, tienes el poder de decidir el destino de Samka Chancha y de cómo gobernar tu pueblo.</p>
+
+    <div class="decisiones-titulo">— ¿CUÁL ES TU DECISIÓN COMO GOBERNANTE? —</div>
+    <div class="opciones">
+      <button class="opcion" onclick="decidir(5, 'A', +25, 'Exactamente lo que hizo Atahualpa en la leyenda. El dolor no forma líderes; la conciencia tranquila sí.', 'fin')">
+        Mandas tapar el pozo. El miedo y el castigo no mejoran a las personas. Lo que cambia a alguien es cumplir su deber con conciencia tranquila.
+        <span class="efecto">✦ Decisión justa — como en la leyenda original</span>
+      </button>
+      <button class="opcion" onclick="decidir(5, 'B', -10, 'El temor puede mantener el orden, pero no forma personas de buen corazón.', 'fin')">
+        Mantienes el pozo abierto. El pueblo debe temer las consecuencias del mal.
+        <span class="efecto">✦ El miedo como herramienta de gobierno</span>
+      </button>
+      <button class="opcion" onclick="decidir(5, 'C', +10, 'Transformar el dolor en enseñanza es sabio, aunque la leyenda nos dice que Atahualpa eligió clausurarlo definitivamente.', 'fin')">
+        Conviertes Samka Chancha en un lugar de enseñanza para los jóvenes del Imperio.
+        <span class="efecto">✦ Transformar el dolor en aprendizaje</span>
+      </button>
+    </div>
+    <div class="feedback" id="fb-5"></div>
+    <button class="btn-continuar" id="btn-c5" style="display:none;" onclick="mostrarFinal()">Ver el desenlace ▶</button>
+  </div>
+
+</div><!-- fin #juego -->
+
+<!-- ===== PANTALLA FINAL ===== -->
+<div id="pantalla-final">
+  <div class="lugar" style="text-align:center; border-left:none; padding-left:0; margin-bottom:20px;">⚔ DESENLACE DE LA LEYENDA ⚔</div>
+
+  <div id="titulo-fin" class="titulo-fin"></div>
+  <div id="puntaje-final"></div>
+
+  <div id="descripcion-fin" class="descripcion-fin"></div>
+
+  <div class="divisor"></div>
+
+  <div class="moraleja-box">
+    <div class="m-titulo">— MORALEJA DE LA LEYENDA —</div>
+    <p>Esta leyenda resalta la importancia de la justicia y el liderazgo en la cultura inca. Samka Chancha no solo era un lugar de castigo, sino también una herramienta para mantener el orden y la moral entre los súbditos del imperio. La experiencia de Atahualpa en este lugar simboliza la preparación y el entendimiento necesarios para gobernar con sabiduría y empatía.</p>
+  </div>
+
+  <div class="moraleja-box" style="border-color: var(--rojo-inca); margin-top:14px;">
+    <div class="m-titulo" style="color: var(--oro);">— EL MENSAJE FINAL —</div>
+    <p>La verdadera fuerza no está en el castigo, sino en hacer el bien, incluso cuando nadie nos ve.</p>
+  </div>
+
+  <button class="btn-reiniciar" onclick="reiniciar()" style="margin-top:30px;">↺ Jugar de nuevo</button>
+</div>
+
+<script>
+// Estado
+let pureza = 50;
+const MAX = 100;
+const MIN = 0;
+
+function iniciarJuego() {
+  document.getElementById('pantalla-inicio').style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('pantalla-inicio').style.display = 'none';
+    document.getElementById('hud').style.display = 'flex';
+    document.getElementById('juego').style.display = 'block';
+    irA(1);
+  }, 800);
+}
+
+function irA(num) {
+  document.querySelectorAll('.escena').forEach(e => e.classList.remove('activa'));
+  const sc = document.getElementById('escena-' + num);
+  if (sc) { sc.classList.add('activa'); window.scrollTo({top:0, behavior:'smooth'}); }
+}
+
+function decidir(escena, opcion, delta, mensaje, siguiente) {
+  // Actualizar pureza
+  pureza = Math.max(MIN, Math.min(MAX, pureza + delta));
+  actualizarBarra();
+
+  // Deshabilitar botones
+  const bts = document.querySelectorAll(`#escena-${escena} .opcion`);
+  bts.forEach(b => { b.disabled = true; b.style.opacity = '0.5'; b.style.cursor = 'default'; });
+
+  // Mostrar feedback
+  const fb = document.getElementById('fb-' + escena);
+  fb.style.display = 'block';
+  const signo = delta > 0 ? '+' : '';
+  const color = delta > 0 ? '#C9A84C' : (delta < 0 ? '#8B1A1A' : '#7a6040');
+  fb.innerHTML = `<span style="color:${color}; font-family:'Cinzel',serif; font-size:0.8rem;">${signo}${delta} pureza</span><br>${mensaje}`;
+
+  // Mostrar botón continuar
+  const btn = document.getElementById('btn-c' + escena);
+  if (btn) {
+    btn.style.display = 'inline-block';
+    if (siguiente === 'fin') {
+      btn.textContent = 'Ver el desenlace ▶';
+      btn.onclick = mostrarFinal;
+    }
+  }
+}
+
+function actualizarBarra() {
+  document.getElementById('barra-pureza-fill').style.width = pureza + '%';
+  document.getElementById('pureza-valor').textContent = pureza;
+}
+
+function mostrarFinal() {
+  document.getElementById('juego').style.display = 'none';
+  document.getElementById('hud').style.display = 'none';
+  const pf = document.getElementById('pantalla-final');
+  pf.style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  const tit = document.getElementById('titulo-fin');
+  const desc = document.getElementById('descripcion-fin');
+  const pts = document.getElementById('puntaje-final');
+
+  pts.textContent = `Pureza de corazón final: ${pureza} / 100`;
+
+  if (pureza >= 80) {
+    tit.textContent = '🐍 La Víbora se Arrastró a Tu Lado';
+    tit.style.color = '#F0D080';
+    desc.innerHTML = `La víbora se deslizó por el suelo del pozo, pero <strong>no te atacó</strong>. Solo se arrastró suavemente a tu lado, como si supiera que eras puro de corazón.<br><br>
+    Cuando te subieron, Quishpe te abrazó emocionado: <em>"Estoy muy orgulloso de ti. Has demostrado tener valentía y una conciencia limpia. Esas son las cualidades de un verdadero líder."</em><br><br>
+    Con el paso del años, como Emperador, mandaste tapar el pozo de Samka Chancha. Habías aprendido que el miedo y el dolor no hacen mejor a nadie. Lo que realmente cambia a las personas es cumplir con el deber y tener una conciencia tranquila.`;
+  } else if (pureza >= 50) {
+    tit.textContent = '⚖ La Víbora Te Observó Sin Atacar';
+    tit.style.color = '#C9A84C';
+    desc.innerHTML = `La víbora te observó desde la oscuridad. Notó dudas en tu corazón, pero también bondad. <strong>No te atacó</strong>, pero tampoco se acercó como con los más puros.<br><br>
+    Quishpe te recibió con seriedad: <em>"Tienes buen corazón, Atahualpa, pero aún debes trabajar en ti mismo. Un gobernante siempre puede crecer."</em><br><br>
+    Tu camino hacia el liderazgo sabio apenas comienza. Recuerda: la verdadera fuerza no está en el castigo, sino en hacer el bien, incluso cuando nadie nos ve.`;
+  } else {
+    tit.textContent = '⚠ La Víbora Conoció Tu Corazón';
+    tit.style.color = '#8B1A1A';
+    desc.innerHTML = `La víbora detectó las sombras en tu corazón: la cobardía, la mentira o la indiferencia. Se agitó con fuerza en el pozo.<br><br>
+    Quishpe, con voz grave, te habló: <em>"Atahualpa, la víbora no miente. Ella juzga el corazón, no las palabras. Debes reflexionar sobre tus acciones y valores antes de poder gobernar a otros."</em><br><br>
+    La leyenda de Samka Chancha enseña que mentirosos, cobardes o crueles no pueden gobernar con justicia. ¿Qué cambiarías en ti mismo? Inténtalo de nuevo.`;
+  }
+}
+
+function reiniciar() {
+  pureza = 50;
+  actualizarBarra();
+  document.getElementById('pantalla-final').style.display = 'none';
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('juego').style.display = 'block';
+
+  // Reset escenas
+  document.querySelectorAll('.escena').forEach(e => e.classList.remove('activa'));
+  document.querySelectorAll('.feedback').forEach(f => { f.style.display = 'none'; f.innerHTML = ''; });
+  document.querySelectorAll('.opcion').forEach(b => { b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer'; });
+  document.querySelectorAll('.btn-continuar').forEach(b => b.style.display = 'none');
+
+  // Restaurar btn escena 5
+  const b5 = document.getElementById('btn-c5');
+  if(b5) { b5.textContent = 'Ver el desenlace ▶'; b5.onclick = mostrarFinal; }
+
+  irA(1);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Partículas flotantes
+function crearParticulas() {
+  const cont = document.getElementById('particulas');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particula';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.opacity = Math.random() * 0.5;
+    cont.appendChild(p);
+  }
+}
+crearParticulas();
+</script>
+</body>
+</html>
